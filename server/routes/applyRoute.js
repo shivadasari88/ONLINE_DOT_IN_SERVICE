@@ -1,8 +1,9 @@
+
 const express = require('express');
-const dotenv = require('dotenv').config()
+const dotenv = require('dotenv').config();
 const puppeteer = require('puppeteer');
 const mongoose = require('mongoose');
-const Profile = require('../models/profile'); // Adjust the path as necessary
+const Profile = require('../models/profile');
 const { Router } = express;
 const cors = require('cors');
 
@@ -11,9 +12,11 @@ const router = Router();
 router.use(
   cors({
     credentials: true,
-    origin: 'http://localhost:5173'
+    origin: 'http://localhost:5173',
   })
 );
+
+router.use(express.json()); // Add this to ensure the body is parsed correctly
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -22,16 +25,11 @@ async function fillForm(profileData) {
   const page = await browser.newPage();
   await page.goto('https://forms.gle/3N82sCRA2dQsdBX67');
 
-  // Using specific selectors for the input fields
   console.log('Typing username:', profileData.username);
   console.log('Typing email:', profileData.email);
 
-  await page.type('.whsOnd ', profileData.username);
-  await page.type('.whsOnd ', profileData.email);
-  
-  // Assuming the form fields have unique selectors
- //await page.type('input[name="username"]', profileData.username);
- // await page.type('input[name="email"]', profileData.email);
+  await page.type('.whsOnd', profileData.username);
+  await page.type('.whsOnd', profileData.email);
 
   await page.click('.NPEfkd');
 
@@ -40,16 +38,26 @@ async function fillForm(profileData) {
 }
 
 router.post('/apply', async (req, res) => {
-  // Retrieve a single profile from MongoDB and use it with Puppeteer
-  Profile.findOne().then(profileData => {
+  
+  const username = req.body.username;
+  console.log(username)
+
+  if (!username) {
+    return res.status(400).json({ error: 'Username is missing' });
+  }
+
+  try {
+    const profileData = await Profile.findOne({ username });
     if (profileData) {
-      fillForm(profileData); // Now passing a single profile object
+      await fillForm(profileData);
+      res.status(200).json({ message: 'Form submitted successfully' });
     } else {
-      console.log('Profile not found');
+      res.status(404).json({ error: 'Profile not found' });
     }
-  }).catch(err => {
+  } catch (err) {
     console.error('Error retrieving profile:', err);
-  });
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 module.exports = router;

@@ -36,7 +36,7 @@ export default function Dashboard() {
         // Implement the logic to automate registration
         // This might involve setting some state, calling a backend service, etc.
         try {
-            const response = await axios.post('/apply', { userId:user._id});
+            const response = await axios.post('/apply', { username: user.name });
             toast.success('application submitted successfully')
         } catch (error) {
             console.error('error applying:',error)
