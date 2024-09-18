@@ -3,6 +3,9 @@ const router = express.Router();
 const cors = require('cors')
 const {test,registerUser,loginUser,getProfile, createProfile} = require('../controllers/authController')
 
+const multer = require('multer')
+const path = require('path');
+
 //middleware
 
 router.use(
@@ -12,10 +15,31 @@ router.use(
     })
 )
 
+// Set up multer for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); // Ensure you have this folder in your project
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({ storage: storage });
+
+
 router.get('/',test)
 router.post('/register',registerUser)
 router.post('/login',loginUser)
 router.get('/profile',getProfile)
-router.post('/update',createProfile)
+router.post('/update', upload.fields([
+    { name: 'brideAadhaarCard', maxCount: 1 },
+    { name: 'fatherAadhaarCard', maxCount: 1 },
+    { name: 'casteCertificate', maxCount: 1 },
+    { name: 'incomeCertificate', maxCount: 1 },
+    { name: 'educationCertificate', maxCount: 1 },
+    { name: 'bridePhoto', maxCount: 1 }
+]), createProfile);
 
 module.exports =router;

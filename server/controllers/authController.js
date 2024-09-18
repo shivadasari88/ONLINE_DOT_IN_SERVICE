@@ -4,6 +4,7 @@ const {hashPassword,comparePassword} = require('../helpers/auth')
 const { hash } = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
+
 const test = (req,res)=>{
     res.json('test is working')
     console.log("ol")
@@ -97,12 +98,36 @@ const getProfile =(req,res)=>{
         })
     }
 }
+
+
+
 const createProfile = async(req,res)=>{
-    const { username, email, phone, gender } = req.body;
+    const { username, email, phone, gender,brideName,brideDob,
+        brideAadhaar,caste,educationQualification, brideAddress,fatherName,
+        fatherAadhaar, motherName,motherAadhaar, annualIncome, rationCard, 
+        groomName, groomDob, groomAadhaar, marriageDate, marriageVenue,
+         bankAccount, bankName, branchName, ifscCode} = req.body;
+
+             // Access uploaded files from req.files
+    const brideAadhaarCardPath = req.files['brideAadhaarCard'] ? req.files['brideAadhaarCard'][0].path : null;
+    const fatherAadhaarCardPath = req.files['fatherAadhaarCard'] ? req.files['fatherAadhaarCard'][0].path : null;
+    const casteCertificatePath = req.files['casteCertificate'] ? req.files['casteCertificate'][0].path : null;
+    const incomeCertificatePath = req.files['incomeCertificate'] ? req.files['incomeCertificate'][0].path : null;
+    const educationCertificatePath = req.files['educationCertificate'] ? req.files['educationCertificate'][0].path : null;
+    const bridePhotoPath = req.files['bridePhoto'] ? req.files['bridePhoto'][0].path : null;
     
     try {
         // Assuming you have a method to find and update the user, or create if not found
-        const user = await Profile.findOneAndUpdate({ email }, { username, phone, gender }, { new: true, upsert: true });
+        const user = await Profile.findOneAndUpdate({ email }, { username, phone, gender, brideName , 
+            brideDob,brideAadhaar,caste,educationQualification, brideAddress,fatherName,fatherAadhaar,
+             motherName, motherAadhaar, annualIncome, rationCard, groomName, groomDob, groomAadhaar,
+              marriageDate, marriageVenue, bankAccount, bankName, branchName, ifscCode,
+              brideAadhaarCard: brideAadhaarCardPath, 
+              fatherAadhaarCard: fatherAadhaarCardPath, 
+              casteCertificate: casteCertificatePath, 
+              incomeCertificate: incomeCertificatePath, 
+              educationCertificate: educationCertificatePath, 
+              bridePhoto: bridePhotoPath }, { new: true, upsert: true });
         res.status(200).json(user);
     } catch (error) {
         console.error(error);
