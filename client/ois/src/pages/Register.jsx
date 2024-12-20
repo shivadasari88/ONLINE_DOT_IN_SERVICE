@@ -44,7 +44,8 @@ export default function Register() {
     };
 
     return (
-        <div>
+        
+        <div className='register'>
             <form onSubmit={registerUser}>
                 <label>Name</label>
                 <input type='text' name='name' placeholder='Enter name...' value={userData.name} onChange={handleInputChange}/>
@@ -52,8 +53,9 @@ export default function Register() {
                 <input type='email' name='email' placeholder='Enter email...' value={userData.email} onChange={handleInputChange}/>
                 <label>Password</label>
                 <input type='password' name='password' placeholder='Enter password...' value={userData.password} onChange={handleInputChange}/>
-                <button type='submit'>Submit</button>
+                <button type='submit'>Register</button>
             </form>
         </div>
+        
     );
 }

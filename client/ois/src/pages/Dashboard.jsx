@@ -46,12 +46,31 @@ export default function Dashboard() {
     };
 
     return (
-        <div>
-            <h1>Dashboard</h1>
-            {!!user && <h2>Hi {user.name}!</h2>}
-            <div>
-                <button onClick={handleUpdateProfile}>Update Profile</button>
-                <button onClick={handleAutomateRegistration}>Apply</button>
+        <div className='dashboard'>
+            
+            <div >
+                <div>
+                    <h1>Dashboard</h1>
+                    {!!user && <h2>Hi {user.name}!</h2>}
+                </div>
+                <div className='updateProfile'>
+                    <h1>UPDATE PROFILE</h1>
+                    <button onClick={handleUpdateProfile}>Update Profile</button>
+                </div>
+                <div className='services'>
+                    <h1>SERVICES</h1>
+                    <ul>
+                        <li>
+                            <button onClick={handleAutomateRegistration}>Service A</button>
+                        </li>
+                        <li>                    
+                            <button onClick={handleAutomateRegistration}>Service B</button>
+                        </li>
+                        <li>                    
+                            <button onClick={handleAutomateRegistration}>Service C</button>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     );

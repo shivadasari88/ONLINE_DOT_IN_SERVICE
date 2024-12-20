@@ -3,6 +3,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
+
 export default function Login() {
     const navigate = useNavigate();
     const [loginData, setLoginData] = useState({
@@ -35,7 +36,8 @@ export default function Login() {
     };
 
     return (
-        <div>
+        <div className='login'>
+           
             <form onSubmit={loginUser}>
                 <label>Email</label>
                 <input 

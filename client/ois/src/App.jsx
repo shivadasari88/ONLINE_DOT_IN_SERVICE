@@ -1,7 +1,9 @@
 
 import './App.css'
+import './index.css'
 import {Routes, Route} from 'react-router-dom';
 import Navbar from '../src/components/Navbar';
+import Footer from '../src/components/Footer';
 import Home from '../src/pages/Home'
 import Register from '../src/pages/Register'
 import Login from '../src/pages/Login'
@@ -16,6 +18,7 @@ axios.defaults.baseURL= 'http://localhost:3000'
 axios.defaults.withCredentials = true
 function App() {
   return (
+    <>
     <UserContextProvider>
     <Navbar />
     <Toaster position='bottom-right' toastOptions={{duration:2000}}/>
@@ -26,8 +29,10 @@ function App() {
       <Route path='/dashboard' element={<Dashboard />} />
       <Route path='/updateprofile' element={<UpdateProfile />} />
     </Routes>
+    <Footer/>
       
     </UserContextProvider>
+    </> 
   )
 }
 
