@@ -102,11 +102,7 @@ const getProfile =(req,res)=>{
 
 
 const createProfile = async(req,res)=>{
-    const { username, email, phone, gender,brideName,brideDob,
-        brideAadhaar,caste,educationQualification, brideAddress,fatherName,
-        fatherAadhaar, motherName,motherAadhaar, annualIncome, rationCard, 
-        groomName, groomDob, groomAadhaar, marriageDate, marriageVenue,
-         bankAccount, bankName, branchName, ifscCode} = req.body;
+    const { username, email, phone, gender} = req.body;
 
              // Access uploaded files from req.files
     const brideAadhaarCardPath = req.files['brideAadhaarCard'] ? req.files['brideAadhaarCard'][0].path : null;
@@ -118,10 +114,7 @@ const createProfile = async(req,res)=>{
     
     try {
         // Assuming you have a method to find and update the user, or create if not found
-        const user = await Profile.findOneAndUpdate({ email }, { username, phone, gender, brideName , 
-            brideDob,brideAadhaar,caste,educationQualification, brideAddress,fatherName,fatherAadhaar,
-             motherName, motherAadhaar, annualIncome, rationCard, groomName, groomDob, groomAadhaar,
-              marriageDate, marriageVenue, bankAccount, bankName, branchName, ifscCode,
+        const user = await Profile.findOneAndUpdate({ email }, { username, phone, gender,
               brideAadhaarCard: brideAadhaarCardPath, 
               fatherAadhaarCard: fatherAadhaarCardPath, 
               casteCertificate: casteCertificatePath, 

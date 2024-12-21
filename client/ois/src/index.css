@@ -6,7 +6,7 @@
     text-align: center;
     margin: auto;
     width: 60%;
-    padding: 100px;
+    padding: 125px;
     border-radius: 14px;
     flex-direction: row;
 }
@@ -35,4 +35,17 @@
     padding: 100px;
     border-radius: 14px;
     flex-direction: row;
+}
+
+.updateform{
+        margin-top: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.915) ;
+        border-radius: 100px;
+        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.101);
+        text-align:center;
+        width: 60%;
+        margin: auto;
+        padding: 100px;
+        border-radius: 14px;
+        flex-direction: row; 
 }
