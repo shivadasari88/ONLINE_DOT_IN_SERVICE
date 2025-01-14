@@ -1,5 +1,24 @@
 const mongoose = require('mongoose');
 
+const MemoDataSchema = new mongoose.Schema({
+  examBoardType: String,
+  state: String,
+  certificateType: String,
+  candidateName: String,
+  fathersName: String,
+  mothersName: String,
+  rollNumber: String,
+  dateOfBirth: String,
+  examType: String,
+  aadhaarNo: String,
+  schoolName: String,
+  medium: String,
+  examYear: String,
+  cgpa: String,
+  identificationMark1: String,
+  identificationMark2: String
+});
+
 const ProfileSchema = new mongoose.Schema({
   username: { 
     type: String, 
@@ -27,8 +46,8 @@ const ProfileSchema = new mongoose.Schema({
   casteCertificate: { type: String },
   incomeCertificate: { type: String },
   educationCertificate: { type: String },
-  bridePhoto: { type: String }
- 
+  bridePhoto: { type: String },
+  parsedData: MemoDataSchema,
 });
 
 module.exports = mongoose.model('profile', ProfileSchema);

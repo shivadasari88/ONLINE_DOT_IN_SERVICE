@@ -87,6 +87,8 @@ export default function UpdateProfile() {
                 }
             });
             toast.success('Profile updated successfully!');
+            console.log('Extracted Aadhaar Data:', data.user);
+
             // Additional actions based on response
         } catch (error) {
             toast.error('Failed to update profile.');

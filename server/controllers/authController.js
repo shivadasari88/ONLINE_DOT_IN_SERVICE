@@ -4,6 +4,7 @@ const {hashPassword,comparePassword} = require('../helpers/auth')
 const { hash } = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
+const {extractDetailsFromMemo } = require('../dataExtraction/memo')
 
 const test = (req,res)=>{
     res.json('test is working')
@@ -113,6 +114,11 @@ const createProfile = async(req,res)=>{
     const bridePhotoPath = req.files['bridePhoto'] ? req.files['bridePhoto'][0].path : null;
     
     try {
+
+        let memoData ={};
+        if(brideAadhaarCardPath){
+            memoData = await extractDetailsFromMemo(brideAadhaarCardPath)
+        }
         // Assuming you have a method to find and update the user, or create if not found
         const user = await Profile.findOneAndUpdate({ email }, { username, phone, gender,
               brideAadhaarCard: brideAadhaarCardPath, 
@@ -120,9 +126,13 @@ const createProfile = async(req,res)=>{
               casteCertificate: casteCertificatePath, 
               incomeCertificate: incomeCertificatePath, 
               educationCertificate: educationCertificatePath, 
-              bridePhoto: bridePhotoPath }, { new: true, upsert: true });
-        res.status(200).json(user);
-    } catch (error) {
+              bridePhoto: bridePhotoPath ,
+              parsedData :memoData,
+            
+            },
+               { new: true, upsert: true });
+               res.status(200).json({ message: 'Profile updated successfully', user });
+            } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error aving profile' });
     }
