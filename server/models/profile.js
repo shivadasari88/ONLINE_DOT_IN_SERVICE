@@ -18,6 +18,13 @@ const MemoDataSchema = new mongoose.Schema({
   identificationMark1: String,
   identificationMark2: String
 });
+const BonofideSchema = new mongoose.Schema({
+  collegeName:String,
+  collegeAddress: String,
+  hallticketNo: String,
+  course: String,
+  branch: String,
+})
 
 const ProfileSchema = new mongoose.Schema({
   username: { 
@@ -41,13 +48,11 @@ const ProfileSchema = new mongoose.Schema({
   // New fields for Kalyana Lakshmi Pathakam
  
   // File uploads can be managed as paths or base64 strings
-  brideAadhaarCard: { type: String },
-  fatherAadhaarCard: { type: String },
-  casteCertificate: { type: String },
-  incomeCertificate: { type: String },
-  educationCertificate: { type: String },
-  bridePhoto: { type: String },
-  parsedData: MemoDataSchema,
+  memo: { type: String },
+  bonofide: { type: String },
+  passPhoto: { type: String },
+  parsedMemoData: MemoDataSchema,
+  parsedbonofideData:BonofideSchema,
 });
 
 module.exports = mongoose.model('profile', ProfileSchema);

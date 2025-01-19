@@ -5,6 +5,7 @@ const { hash } = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 const {extractDetailsFromMemo } = require('../dataExtraction/memo')
+const {extractDetailsFromBonofide} =require('../dataExtraction/bonofide')
 
 const test = (req,res)=>{
     res.json('test is working')
@@ -106,28 +107,27 @@ const createProfile = async(req,res)=>{
     const { username, email, phone, gender} = req.body;
 
              // Access uploaded files from req.files
-    const brideAadhaarCardPath = req.files['brideAadhaarCard'] ? req.files['brideAadhaarCard'][0].path : null;
-    const fatherAadhaarCardPath = req.files['fatherAadhaarCard'] ? req.files['fatherAadhaarCard'][0].path : null;
-    const casteCertificatePath = req.files['casteCertificate'] ? req.files['casteCertificate'][0].path : null;
-    const incomeCertificatePath = req.files['incomeCertificate'] ? req.files['incomeCertificate'][0].path : null;
-    const educationCertificatePath = req.files['educationCertificate'] ? req.files['educationCertificate'][0].path : null;
-    const bridePhotoPath = req.files['bridePhoto'] ? req.files['bridePhoto'][0].path : null;
+    const memoPath = req.files['memo'] ? req.files['memo'][0].path : null;
+    const bonofidePath = req.files['bonofide'] ? req.files['bonofide'][0].path : null;
+    const passPhotoPath = req.files['passPhoto'] ? req.files['passPhoto'][0].path : null;
     
     try {
 
         let memoData ={};
-        if(brideAadhaarCardPath){
-            memoData = await extractDetailsFromMemo(brideAadhaarCardPath)
+        let bonofideData= {};
+        if(memoPath){
+            memoData = await extractDetailsFromMemo(memoPath)
+        }
+        if(bonofidePath){
+            bonofideData = await extractDetailsFromBonofide(bonofidePath)
         }
         // Assuming you have a method to find and update the user, or create if not found
         const user = await Profile.findOneAndUpdate({ email }, { username, phone, gender,
-              brideAadhaarCard: brideAadhaarCardPath, 
-              fatherAadhaarCard: fatherAadhaarCardPath, 
-              casteCertificate: casteCertificatePath, 
-              incomeCertificate: incomeCertificatePath, 
-              educationCertificate: educationCertificatePath, 
-              bridePhoto: bridePhotoPath ,
-              parsedData :memoData,
+              memo: memoPath, 
+              bonofide: bonofidePath, 
+              passPhoto: passPhotoPath ,
+              parsedMemoData :memoData,
+              parsedbonofideData : bonofideData,
             
             },
                { new: true, upsert: true });

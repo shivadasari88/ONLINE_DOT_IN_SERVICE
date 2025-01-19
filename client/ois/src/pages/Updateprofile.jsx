@@ -15,12 +15,9 @@ export default function UpdateProfile() {
         phone: '',
     });
 // Image fields state
-    const [brideAadhaarCard, setBrideAadhaarCard] = useState(null);
-    const [fatherAadhaarCard, setFatherAadhaarCard] = useState(null);
-    const [casteCertificate, setCasteCertificate] = useState(null);
-    const [incomeCertificate, setIncomeCertificate] = useState(null);
-    const [educationCertificate, setEducationCertificate] = useState(null);
-    const [bridePhoto, setBridePhoto] = useState(null);
+    const [memo, setMemo] = useState(null);
+    const [bonofide, setBonofide] = useState(null);
+    const [passPhoto, setPassPhoto] = useState(null);
     
 
     useEffect(() => {
@@ -39,23 +36,14 @@ export default function UpdateProfile() {
         const { name, files } = e.target;
         if (files && files[0]) {
             switch (name) {
-                case 'brideAadhaarCard':
-                    setBrideAadhaarCard(files[0]);
+                case 'memo':
+                    setMemo(files[0]);
                     break;
-                case 'fatherAadhaarCard':
-                    setFatherAadhaarCard(files[0]);
+                case 'bonofide':
+                    setBonofide(files[0]);
                     break;
-                case 'casteCertificate':
-                    setCasteCertificate(files[0]);
-                    break;
-                case 'incomeCertificate':
-                    setIncomeCertificate(files[0]);
-                    break;
-                case 'educationCertificate':
-                    setEducationCertificate(files[0]);
-                    break;
-                case 'bridePhoto':
-                    setBridePhoto(files[0]);
+                case 'passPhoto':
+                    setPassPhoto(files[0]);
                     break;
                 default:
                     break;
@@ -73,12 +61,9 @@ export default function UpdateProfile() {
         });
 
         // Append file data to FormData
-        formData.append('brideAadhaarCard', brideAadhaarCard);
-        formData.append('fatherAadhaarCard', fatherAadhaarCard);
-        formData.append('casteCertificate', casteCertificate);
-        formData.append('incomeCertificate', incomeCertificate);
-        formData.append('educationCertificate', educationCertificate);
-        formData.append('bridePhoto', bridePhoto);
+        formData.append('memo', memo);
+        formData.append('bonofide', bonofide);
+        formData.append('passPhoto', passPhoto);
 
         try {
             const { data } = await axios.post('/update', formData, {
@@ -140,33 +125,18 @@ export default function UpdateProfile() {
                     <h1>UPLOAD IMAGES</h1>
                     <ul>
                         <li>
-                            <label>Bride Aadhaar Card</label>
-                            <input type='file' name='brideAadhaarCard' onChange={handleFileChange} />
+                            <label>10th memo</label>
+                            <input type='file' name='memo' onChange={handleFileChange} />
                         </li>
 
                         <li>
-                            <label>Father Aadhaar Card</label>
-                            <input type='file' name='fatherAadhaarCard' onChange={handleFileChange} />
-                        </li>
-
-                        <li> 
-                            <label>Caste Certificate</label>
-                             <input type='file' name='casteCertificate' onChange={handleFileChange} />
+                            <label>Bonofide</label>
+                            <input type='file' name='bonofide' onChange={handleFileChange} />
                         </li>
 
                         <li>
-                            <label>Income Certificate</label>
-                             <input type='file' name='incomeCertificate' onChange={handleFileChange} />
-                        </li>
-
-                        <li>
-                            <label>Education Certificate</label>
-                             <input type='file' name='educationCertificate' onChange={handleFileChange} />
-                        </li>
-
-                        <li>
-                            <label>Bride Photo</label>
-                             <input type='file' name='bridePhoto' onChange={handleFileChange} />
+                            <label>pass Photo</label>
+                             <input type='file' name='passPhoto' onChange={handleFileChange} />
                         </li>
                     </ul>
 

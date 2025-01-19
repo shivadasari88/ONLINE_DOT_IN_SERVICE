@@ -34,12 +34,9 @@ router.post('/register',registerUser)
 router.post('/login',loginUser)
 router.get('/profile',getProfile)
 router.post('/update', upload.fields([
-    { name: 'brideAadhaarCard', maxCount: 1 },
-    { name: 'fatherAadhaarCard', maxCount: 1 },
-    { name: 'casteCertificate', maxCount: 1 },
-    { name: 'incomeCertificate', maxCount: 1 },
-    { name: 'educationCertificate', maxCount: 1 },
-    { name: 'bridePhoto', maxCount: 1 }
+    { name: 'memo', maxCount: 1 },
+    { name: 'bonofide', maxCount: 1 },
+    { name: 'passPhoto', maxCount: 1 }
 ]), createProfile);
 
 module.exports =router;
