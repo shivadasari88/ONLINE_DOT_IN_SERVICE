@@ -44,6 +44,54 @@ export default function Dashboard() {
             
         }
     };
+    /*
+
+    const handleAutomateBussPassRegistration  = async () => {
+        console.log('Automating registration of bussPass for:', user.name);
+
+        // Implement the logic to automate registration
+        // This might involve setting some state, calling a backend service, etc.
+        try {
+            const response = await axios.post('/applyBusPass', { username: user.name });
+            toast.success('application submitted successfully for busPass')
+        } catch (error) {
+            console.error('error applying:',error)
+            toast.error('failed to submit application');
+            
+        }
+    };
+    */
+    const handleAutomateBussPassRegistration = async () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+    
+                    console.log(`User location: ${latitude}, ${longitude}`);
+    
+                    try {
+                        const response = await axios.post('/applyBusPass', {
+                            username: user.name,
+                            latitude,
+                            longitude
+                        });
+                        toast.success('Application submitted successfully for Bus Pass');
+                    } catch (error) {
+                        console.error('Error applying:', error);
+                        toast.error('Failed to submit application');
+                    }
+                },
+                (err) => {
+                    console.error('Geolocation error:', err.message);
+                    toast.error('Failed to get location. Please enable location services.');
+                }
+            );
+        } else {
+            toast.error('Geolocation is not supported by your browser');
+        }
+    };
+    
 
     return (
         <div className='dashboard'>
@@ -64,7 +112,7 @@ export default function Dashboard() {
                             <button onClick={handleAutomateRegistration}>Service A</button>
                         </li>
                         <li>                    
-                            <button onClick={handleAutomateRegistration}>Service B</button>
+                            <button onClick={handleAutomateBussPassRegistration}>Apply BussPass</button>
                         </li>
                         <li>                    
                             <button onClick={handleAutomateRegistration}>Service C</button>

@@ -24,6 +24,7 @@ app.use(express.urlencoded({extended:false}))
 
 app.use('/',require('./routes/authRouter'));
 app.use("/",require('./routes/applyRoute'));
+app.use("/",require('./routes/bussPassRoute'));
 
 
 const port = 3000;
