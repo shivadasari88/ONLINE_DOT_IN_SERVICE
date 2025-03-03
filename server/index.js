@@ -27,5 +27,5 @@ app.use("/",require('./routes/applyRoute'));
 app.use("/",require('./routes/bussPassRoute'));
 
 
-const port = 3000;
-app.listen(port,()=> console.log(`server is listening on port ${port}`))
+const PORT = process.env.PORT || 3000;
+app.listen(PORT,()=> console.log(`server is listening on port ${PORT}`))

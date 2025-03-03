@@ -110,7 +110,7 @@ router.post('/applyBusPass', async (req, res) => {
             return res.status(500).json({ error: 'Failed to find nearest counter' });
         }
 
-        const browser = await firefox.launch({ headless: false });
+        const browser = await firefox.launch({ headless: true });
         const context = await browser.newContext({
             permissions: ['geolocation'],
             geolocation: { latitude, longitude },
@@ -254,6 +254,7 @@ if (collegeValue) {
     const locationMap = {
         "Mehdipatnam": "931",
         "Farooqnagar": "1203",
+        "Suchitra":"1209",
     };
     
     // Normalize and check if location exists
