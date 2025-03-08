@@ -46,29 +46,40 @@ async function getAddress(latitude, longitude) {
             const firstResult = data.results[0];
 
             let houseNo = "";
-            const addressParts = firstResult.formatted_address.split(",");
-            for (let part of addressParts) {
-                const match = part.trim().match(/\d+/);
-                if (match) {
-                    houseNo = part.trim();
-                    break;
-                }
-            }
-
             let postalCode = "";
+            let street = "";
+            let city = "";
+            let state = "";
+            let district = "";
+            let landmark = "";
+
             for (const component of firstResult.address_components) {
+                if (component.types.includes("street_number")) {
+                    houseNo = component.long_name;
+                }
+                if (component.types.includes("route")) {
+                    street = component.long_name;
+                }
+                if (component.types.includes("locality")) {
+                    city = component.long_name;
+                }
+                if (component.types.includes("administrative_area_level_2")) {
+                    district = component.long_name;
+                }
+                if (component.types.includes("administrative_area_level_1")) {
+                    state = component.long_name;
+                }
                 if (component.types.includes("postal_code")) {
                     postalCode = component.long_name;
-                    break;
+                }
+                if (component.types.includes("point_of_interest")) {
+                    landmark = component.long_name;
                 }
             }
 
-            console.log(`Extracted House No: ${houseNo}`);
-            console.log(`Extracted Postal Code: ${postalCode}`);
-
-            return { houseNo, postalCode, fullAddress: firstResult.formatted_address };
+            return { houseNo, street, city, district, state, postalCode, landmark, fullAddress: firstResult.formatted_address };
         } else {
-            throw new Error('Geocoding failed: ' + response.data.status);
+            throw new Error('Geocoding failed: ' + data.status);
         }
     } catch (error) {
         console.error('Error fetching address:', error);
@@ -95,8 +106,8 @@ router.post('/applyBusPass', async (req, res) => {
         }
        
         
-        const { houseNo, postalCode, fullAddress } = addressData;
-        console.log(`User's Address: ${fullAddress}`);
+        const { houseNo, street, city, district, state, postalCode, landmark, fullAddress } = addressData;
+console.log(`User's Address: ${fullAddress}`);
 
         let nearestCounter;
         try {
@@ -110,7 +121,7 @@ router.post('/applyBusPass', async (req, res) => {
             return res.status(500).json({ error: 'Failed to find nearest counter' });
         }
 
-        const browser = await firefox.launch({ headless: true });
+        const browser = await firefox.launch({ headless: false });
         const context = await browser.newContext({
             permissions: ['geolocation'],
             geolocation: { latitude, longitude },
@@ -124,7 +135,7 @@ router.post('/applyBusPass', async (req, res) => {
         await page.click('#hyderabadAdd');
         console.log("Clicked on apply button");
 
-        await page.waitForSelector('a.btn.applyBtns[href="#myModal"]', { timeout: 10000 });
+        await page.waitForSelector('a.btn.applyBtns[href="#myModal"]', { timeout: 1000 });
         await page.click('a.btn.applyBtns[href="#myModal"]');
 
         await page.waitForSelector('a.btn.applyBtns[href="#GhzStuclgPhotoInstructions"]', { visible: true });
@@ -135,7 +146,7 @@ router.post('/applyBusPass', async (req, res) => {
         let newPage = null;
         try {
             [newPage] = await Promise.all([
-                context.waitForEvent('page', { timeout: 10000 }).catch(() => null),
+                context.waitForEvent('page', { timeout: 1000 }).catch(() => null),
                 page.click('a.btn.applyBtns[href="https://tgsrtcpass.com:443/counterstupass.do?prm=hyd"]'),
             ]);
         } catch (error) {
@@ -150,7 +161,22 @@ router.post('/applyBusPass', async (req, res) => {
         });
 
         await targetPage.waitForSelector('input#userProperties\\(sscpassfailyr\\)');
-        await targetPage.fill('input#userProperties\\(sscpassfailyr\\)',"2019");
+        //await targetPage.fill('input#userProperties\\(sscpassfailyr\\)',"2019");
+        let passYear = "MARCH-2019";  // Example input
+
+            // Extract only the year
+            let yearOnly = passYear.split("-")[1];  // Splits at '-' and takes the second part
+
+            // Alternative using regex (if format may vary)
+            let match = passYear.match(/\d{4}/);  
+            if (match) {
+                yearOnly = match[0]; // Extracts first 4-digit number (e.g., 2019)
+            }
+
+            console.log(yearOnly); // Outputs: 2019
+
+            // Fill the form with extracted year
+            await targetPage.fill('input#userProperties\\(sscpassfailyr\\)', yearOnly);
         await targetPage.fill('input#userProperties\\(sscno\\)', profileData.parsedMemoData.rollNumber);
         await targetPage.fill('input#userProperties\\(passdob\\)', profileData.parsedMemoData.dateOfBirth);
 
@@ -163,17 +189,27 @@ router.post('/applyBusPass', async (req, res) => {
         });
 
         await targetPage.waitForSelector('input#youthname');
-        await targetPage.fill('input#youthname', 'SHIVA DASARI');
+        await targetPage.fill('input#youthname',profileData.parsedMemoData.candidateName);
         await page.waitForTimeout(1000);
 
-        await targetPage.fill('input#youthname', 'SHIVA DASARI');
+        await targetPage.fill('input#youthname', profileData.parsedMemoData.candidateName);
 
-        await targetPage.fill('input#youthfgname', 'srinivas');
-        await targetPage.fill('input#studentmobileno', '6304893242');
-        await targetPage.check('input[name="userProperties(gender)"][value="F"]');
+        await targetPage.fill('input#youthfgname', profileData.parsedMemoData.fathersName);
+        await targetPage.fill('input#studentmobileno', profileData.phone);
+        //await targetPage.check('input[name="userProperties(gender)"][value="F"]');
 
-        await targetPage.fill('textarea[name="userProperties(addrhouseno)"]', houseNo);
-        await targetPage.fill('input[name="userProperties(pincode)"]', postalCode);
+        const userGender =profileData.gender.toLowerCase(); // Assuming 'M' or 'F' from the user data
+
+        if (userGender === 'male') {
+            await targetPage.check('input[name="userProperties(gender)"][value="M"]');
+        } else if (userGender === 'female') {
+            await targetPage.check('input[name="userProperties(gender)"][value="F"]');
+        } else {
+            console.error("Invalid gender value! Expected 'M' or 'F'.");
+        }
+
+        await targetPage.fill('textarea[name="userProperties(addrhouseno)"]', houseNo || street || city);
+        await targetPage.fill('input[name="userProperties(pincode)"]', postalCode || "500001");
 
         const filePath = path.resolve(__dirname, '../uploads/bonofide.jpg');
         await targetPage.setInputFiles('input#studentphoto', filePath);
@@ -185,11 +221,7 @@ router.post('/applyBusPass', async (req, res) => {
     const instituteMap = {
         "AADHYA  DEGREE COLLEGE, ANUPURAM,KAPRA---D5915": "32282",
         "St. MARTINS ENGINEERING COLLEGE": "30899",
-        "Christian": "C",
-        "Sikh": "S",
-        "Jain": "J",
-        "Parsi": "P",
-        "Buddhists": "B"
+        
       };
       
       const instituteValue = instituteMap[profileData.parsedbonofideData.collegeName];
@@ -214,10 +246,7 @@ const collegeMaps = {
     "BC-A": "3",
     "BC-B": "4",
     "BC-D": "6",
-    "EBC(LISTED)": "8",
-    "EBC(OTHERS)": "9",
-    "OC(DW)": "7",
-    "ST": "2"
+    
   },
   "St. MARTINS ENGINEERING COLLEGE": {
     "B.Tech 1st Yr": "027A",  // Muslim BC-A (Example value, adjust based on actual HTML values)
@@ -252,10 +281,50 @@ if (collegeValue) {
 
 
     const locationMap = {
-        "Mehdipatnam": "931",
-        "Farooqnagar": "1203",
-        "Suchitra":"1209",
-    };
+
+        "Abids":"1275",
+        "Afzalgunj":"850",
+        "Aramghar":"1197",
+        "Balanagar":"1212",
+        "Borabanda":"1284",
+        "CBS":"923",
+        "Charminar":"1222",
+        "Dilsukhnagar":"918",
+        "ECIL":"992",
+        "Kukatpally":"945",
+        "Lakdikapool":"1342",
+        "Farooqnagar":"1203",
+        "Ghatkesar":"1175",
+
+        "Hayathnagar":"876",
+        "Ibrahimpatnam":"852",
+        "JBS":"924",
+        "Kachiguda":"1036",
+        "Kothi":"1024",
+        "KPHB":"944",
+        "LB Nagar":"990",
+        "Lingampalli":"1186",
+        "Lothukunta":"1272",
+        "Medchal":"1034",
+        "Mehdipatnam":"931",
+        "Midhani":"851",
+        "Moinabad":"1206",
+        "NGOs Colony":"991",
+        "Patancheru":"943",
+        "Rathifile":"1096",
+
+        "Risalabazar":"1183",
+        "Secretariat":"1215",
+        "Shapurnagar":"877",
+        "SR Nagar":'1194',
+        "Suchitra":'1209',
+        "Tarnaka":"1023",
+        "Thukkuguda":"1231",
+        "Uppal":"993",
+        "Uppal X Road":"1198",
+        "Vanasthalipuram":"1223",
+        "W. College":'1263',
+        };
     
     // Normalize and check if location exists
     const formattedLocationName = nearestCounter.name.trim();
