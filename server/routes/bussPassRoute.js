@@ -34,55 +34,39 @@ async function getAddress(latitude, longitude) {
 
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${API_KEY}`;
 
-    //console.log('Fetching address with URL:', url);
-
     try {
-        const response = await axios.get(url);
-        const data = response.data;
+        const { data } = await axios.get(url);
 
-        //console.log('API Response:', response.data);
-
-        if (data.status === "OK" && data.results.length > 0) {
-            const firstResult = data.results[0];
-
-            let houseNo = "";
-            let postalCode = "";
-            let street = "";
-            let city = "";
-            let state = "";
-            let district = "";
-            let landmark = "";
-
-            for (const component of firstResult.address_components) {
-                if (component.types.includes("street_number")) {
-                    houseNo = component.long_name;
-                }
-                if (component.types.includes("route")) {
-                    street = component.long_name;
-                }
-                if (component.types.includes("locality")) {
-                    city = component.long_name;
-                }
-                if (component.types.includes("administrative_area_level_2")) {
-                    district = component.long_name;
-                }
-                if (component.types.includes("administrative_area_level_1")) {
-                    state = component.long_name;
-                }
-                if (component.types.includes("postal_code")) {
-                    postalCode = component.long_name;
-                }
-                if (component.types.includes("point_of_interest")) {
-                    landmark = component.long_name;
-                }
-            }
-
-            return { houseNo, street, city, district, state, postalCode, landmark, fullAddress: firstResult.formatted_address };
-        } else {
-            throw new Error('Geocoding failed: ' + data.status);
+        if (data.status !== "OK" || data.results.length === 0) {
+            console.error('Geocoding failed:', data.status);
+            return null;
         }
+
+        const components = data.results[0].address_components.reduce((acc, component) => {
+            if (component.types.includes("street_number")) acc.houseNo = component.long_name;
+            if (component.types.includes("route")) acc.street = component.long_name;
+            if (component.types.includes("locality")) acc.city = component.long_name;
+            if (component.types.includes("administrative_area_level_2")) acc.district = component.long_name;
+            if (component.types.includes("administrative_area_level_1")) acc.state = component.long_name;
+            if (component.types.includes("postal_code")) acc.postalCode = component.long_name;
+            if (component.types.includes("point_of_interest")) acc.landmark = component.long_name;
+            return acc;
+        }, {
+            houseNo: "",
+            street: "",
+            city: "",
+            district: "",
+            state: "",
+            postalCode: "",
+            landmark: ""
+        });
+
+        return {
+            ...components,
+            fullAddress: data.results[0].formatted_address
+        };
     } catch (error) {
-        console.error('Error fetching address:', error);
+        console.error('Error fetching address:', error.message);
         return null;
     }
 }
@@ -121,7 +105,7 @@ console.log(`User's Address: ${fullAddress}`);
             return res.status(500).json({ error: 'Failed to find nearest counter' });
         }
 
-        const browser = await firefox.launch({ headless: false });
+        const browser = await firefox.launch({ headless: true });
         const context = await browser.newContext({
             permissions: ['geolocation'],
             geolocation: { latitude, longitude },
@@ -205,16 +189,22 @@ console.log(`User's Address: ${fullAddress}`);
         } else if (userGender === 'female') {
             await targetPage.check('input[name="userProperties(gender)"][value="F"]');
         } else {
-            console.error("Invalid gender value! Expected 'M' or 'F'.");
+            console.error("Invalid gender value! Expected 'Male' or 'Female'.");
         }
 
-        await targetPage.fill('textarea[name="userProperties(addrhouseno)"]', houseNo || street || city);
+        await targetPage.fill('textarea[name="userProperties(addrhouseno)"]', houseNo || street || landmark ||city);
         await targetPage.fill('input[name="userProperties(pincode)"]', postalCode || "500001");
 
-        const filePath = path.resolve(__dirname, '../uploads/bonofide.jpg');
+        const filePath = profileData.passPhoto 
+        ? path.resolve(__dirname, `../${profileData.passPhoto}`) 
+        : null;
+    
+    if (filePath) {
         await targetPage.setInputFiles('input#studentphoto', filePath);
-        console.log('File uploaded successfully!');
-
+        console.log('✅ File uploaded successfully!');
+    } else {
+        console.log('⚠️ No photo found for this user.');
+    }
     // Select an option by value (e.g., "32282" for AADHYA DEGREE COLLEGE)
     //await targetPage.selectOption('#instcollname', '32282'); 
 
@@ -239,41 +229,90 @@ console.log(`User's Address: ${fullAddress}`);
 // Delay after selecting religion
 
 
-//caste 
-// Caste map based on the options in the dropdown (adjusted according to the values in the screenshot)
+// Function to normalize course-year from bonafide
+function normalizeCourse(courseText) {
+    if (!courseText) return null;
+
+    let text = courseText.toLowerCase();
+
+    let course = '';
+    if (text.includes('b.tech') || text.includes('bitech') || text.includes('btech') || text.includes('b tech')) {
+        course = 'B.Tech';
+    } else if (text.includes('m.tech') || text.includes('mtech') || text.includes('m tech')) {
+        course = 'M.Tech';
+    } else if (text.includes('diploma')) {
+        course = 'Diploma';
+    } else if (text.includes('b.sc') || text.includes('bsc') || text.includes('b sc')) {
+        course = 'B.Sc';
+    } else if (text.includes('mba')) {
+        course = 'MBA';
+    } else {
+        course = 'Unknown Course';
+    }
+
+    // Handle year formats
+    let year = '';
+    if (text.includes('1st') || text.includes('first')) {
+        year = '1st Year';
+    } else if (text.includes('2nd') || text.includes('ii') || text.includes('second')) {
+        year = '2nd Year';
+    } else if (text.includes('3rd') || text.includes('iii') || text.includes('third')) {
+        year = '3rd Year';
+    } else if (text.includes('4th') || text.includes('iv') || text.includes('fourth') || text.includes('final')) {
+        year = '4th Year';
+    } else {
+        year = 'Unknown Year';
+    }
+
+    // Return the normalized course and year
+    if (course !== 'Unknown Course' && year !== 'Unknown Year') {
+        return `${course} ${year}`;
+    } else {
+        return null;
+    }
+}
+
+// College map for course-to-dropdown mapping
 const collegeMaps = {
   "AADHYA  DEGREE COLLEGE, ANUPURAM,KAPRA---D5915": {
     "BC-A": "3",
     "BC-B": "4",
     "BC-D": "6",
-    
   },
   "St. MARTINS ENGINEERING COLLEGE": {
-    "B.Tech 1st Yr": "027A",  // Muslim BC-A (Example value, adjust based on actual HTML values)
-    "B.Tech 2nd Yr": "027B",  // Muslim BC-B
-    "B.Tech 3rd Yr": "027C",  // Muslim BC-E
-    "B.TECH- - IV": "027D" // Muslim OC (Example value)
+    "B.Tech 1st Year": "027A",
+    "B.Tech 2nd Year": "027B",
+    "B.Tech 3rd Year": "027C",
+    "B.Tech 4th Year": "027D"
   },
-  // Add mappings for other religions if needed...
+  // Add more colleges if needed...
 };
 
-// Get the appropriate caste map based on the selected religion
-const collegeMap = collegeMaps[profileData.parsedbonofideData.collegeName];
+// Extract course from bonafide and normalize it
+const rawCourseText = profileData.parsedbonofideData.course; // From bonafide OCR extraction
+const normalizedCourse = normalizeCourse(rawCourseText);
 
+// Get the college map based on the college name from bonafide
+const collegeName = profileData.parsedbonofideData.collegeName;
+const collegeMap = collegeMaps[collegeName];
 
-// Get the value that corresponds to the user's caste
-const collegeValue = collegeMap[profileData.parsedbonofideData.course]; // `user.caste` should hold the caste value (e.g., "BC-A")
+// Check if the college exists in the map
+if (collegeMap && normalizedCourse) {
+    // Find the value for the course in the dropdown
+    const collegeValue = collegeMap[normalizedCourse];
 
-// Wait for the caste dropdown to appear and select the caste
-if (collegeValue) {
-//await page.waitForSelector('select[name="caste"]'); // Wait for the caste dropdown
-  //await page.select('select[name="caste"]', collegeValue);
-  await targetPage.selectOption('#instcourseid', collegeValue);
+    if (collegeValue) {
+        // Select the appropriate option from the dropdown
+        await targetPage.selectOption('#instcourseid', collegeValue);
 
-  console.log(`Selected Caste: ${profileData.parsedbonofideData.course}`);
+        console.log(`✅ Successfully selected: ${normalizedCourse}`);
+    } else {
+        console.error(`❌ Course not found in the dropdown: ${normalizedCourse}`);
+    }
 } else {
-  console.error("course not found in the dropdown!");
+    console.error(`❌ College not found or course not detected.`);
 }
+
 
     // Select "Payment at Counter" (value="2")
     await targetPage.selectOption('#paymentmodeId', '2');
@@ -375,6 +414,17 @@ if (collegeValue) {
         // STEP 3: Fill in the CAPTCHA
         await targetPage.fill('[name="userProperties(inputcaptcha)"]', captchaText);
         console.log("Filled CAPTCHA successfully");
+
+                // Enable the disabled submit button
+        await targetPage.evaluate(() => {
+            const submitBtn = document.getElementById('submitBtnId');
+            submitBtn.removeAttribute('disabled');
+        });
+
+        // Click the submit button
+       await targetPage.click('#submitBtnId');
+
+        console.log("Form Submitted Successfully");
     
 
     
@@ -382,7 +432,7 @@ if (collegeValue) {
 
 
         await targetPage.waitForTimeout(3000);
-        console.log('Form filled successfully!');
+        console.log('Form filled successfully! ');
 ///////////////////////////////////////////////////////////////////////////////////////////////
         const geoLocation = await targetPage.evaluate(() => {
             return new Promise((resolve, reject) => {
@@ -479,12 +529,12 @@ if (collegeValue) {
         console.log('Geolocation from browser:', geoLocation);
 
 
-        await browser.close();
+       await browser.close();
 
  // **Now send the response after everything is done**
         return res.json({
             success: true,
-            message: 'Bus pass application completed successfully',
+            message: 'Bus pass application completed successfully and you will receive your applicaion id through whatsapp and thank you for using o.is service',
             nearestCounter,
             address: fullAddress
         });

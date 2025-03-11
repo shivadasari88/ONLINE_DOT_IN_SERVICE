@@ -55,7 +55,7 @@ const extractField = (lines, regex, nextLineOffset = 0) => {
             // Check if field and value are on the same line
             const match = lines[i].match(regex);
             const value = lines[i].replace(match[0], "").trim(); // Extract value after the match
-            if (value) return cleanValue(value);
+            if (value) return cleanValue(value.replace(/\s+/g, "")); // Remove all spaces
 
             // If no value on the same line, check next line
             return cleanValue(lines[i + nextLineOffset]);

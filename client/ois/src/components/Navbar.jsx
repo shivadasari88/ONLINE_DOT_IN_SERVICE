@@ -7,7 +7,7 @@ function Navbar() {
     <nav className='navbar'>
         <div className="navbar-left">
     <a href="/" className="logo">
-      HERE
+      ONLINE DOT IN SERVICE
     </a>
   </div>
   <div className="navbar-right">
