@@ -26,6 +26,8 @@ export default function Login() {
                 // Save it to localStorage or context for authenticated state management
                 // localStorage.setItem('authToken', response.data.token);
 
+                                // ✅ Store the email in localStorage
+                                localStorage.setItem('email', email);
                 setLoginData({ email: '', password: '' }); // Reset form fields
                 navigate('/dashboard'); // Navigate to the homepage or dashboard as appropriate
             }

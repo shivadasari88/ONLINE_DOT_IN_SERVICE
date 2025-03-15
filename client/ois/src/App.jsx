@@ -12,6 +12,7 @@ import {Toaster} from 'react-hot-toast';
 import { UserContextProvider } from './contexts/userContext';
 import Dashboard from './pages/Dashboard';
 import UpdateProfile from './pages/Updateprofile';
+import ProfilePage from './pages/ProfilePage'
 
 
 axios.defaults.baseURL= 'http://localhost:3000'
@@ -28,6 +29,8 @@ function App() {
       <Route path='/login' element={<Login />} />
       <Route path='/dashboard' element={<Dashboard />} />
       <Route path='/updateprofile' element={<UpdateProfile />} />
+      <Route path='/profilepage' element={<ProfilePage />} />
+
     </Routes>
     <Footer/>
       

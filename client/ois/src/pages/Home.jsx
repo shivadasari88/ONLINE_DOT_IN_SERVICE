@@ -1,5 +1,10 @@
 import React from 'react';
 import './HomePage.css';
+import img1 from "./assets/1.png";
+import img2 from "./assets/2.png";
+import img3 from "./assets/3.png";
+import img4 from "./assets/4.png";
+
 
 export default function HomePage() {
   return (
@@ -22,28 +27,16 @@ export default function HomePage() {
 
       <div className="categories-container">
         <div className="category-card">
-          <img src="https://via.placeholder.com/100" alt="Scholarship" />
-          <h2>Scholarship Application</h2>
-          <p>Automate Postmatric Scholarship Form</p>
-          <p className="discount">Upto 100% Automation</p>
+          <img src={img1} alt="Scholarship" />
         </div>
         <div className="category-card">
-          <img src="https://via.placeholder.com/100" alt="Bus Pass" />
-          <h2>Bus Pass Automation</h2>
-          <p>Get Bus Pass in One Click</p>
-          <p className="discount">No Manual Entries</p>
+          <img src={img2}alt="Bus Pass" />
         </div>
         <div className="category-card">
-          <img src="https://via.placeholder.com/100" alt="Job Applications" />
-          <h2>Job Application</h2>
-          <p>Submit Forms Automatically</p>
-          <p className="discount">Time Saving 90%</p>
+          <img src={img3} alt="Job Applications" />
         </div>
         <div className="category-card">
-          <img src="https://via.placeholder.com/100" alt="Document Extraction" />
-          <h2>Documents to Data</h2>
-          <p>Extract Details from Documents</p>
-          <p className="discount">OCR Enabled</p>
+          <img src={img4} alt="Document Extraction" />
         </div>
       </div>
     </div>

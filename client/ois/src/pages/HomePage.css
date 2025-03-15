@@ -59,21 +59,17 @@
     padding: 40px 0;
   }
   
-  .category-card {
-    background-color: rgba(255, 255, 255, 0.915);
-    border-radius: 14px;
-    padding: 20px;
-    text-align: center;
+  .category-card img {
+    background-color: rgba(215, 214, 214, 0.915);
+    border-radius: 10px;
+    padding: 0px;
+    text-align:justify;
     width: 220px;
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.101);
     border: 1px solid rgba(255, 255, 255, 0.915);
     transition: transform 0.3s;
   }
   
-  .category-card img {
-    width: 80px;
-    margin-bottom: 15px;
-  }
   
   .category-card h2 {
     font-size: 18px;
@@ -91,7 +87,7 @@
     margin-top: 10px;
   }
   
-  .category-card:hover {
+  .category-card img:hover {
     transform: scale(1.05);
     box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
   }

@@ -16,7 +16,7 @@ function Navbar() {
         <a href='/dashboard'>Home</a>
       </li>
       <li>
-        <a href='#'>Profile</a>
+        <a href='/profilepage'>Profile</a>
       </li>
       <li>
         <a href='#'>Services</a>

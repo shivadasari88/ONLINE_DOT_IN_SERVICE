@@ -20,6 +20,8 @@ import { UserContext } from '../contexts/userContext';
 import axios from 'axios';
 import { toast } from 'react-hot-toast'
 
+import buspassimg from './assets/buspass (1).png'
+
 export default function Dashboard() {
     const { user, setUser } = useContext(UserContext);
     const navigate = useNavigate();
@@ -112,7 +114,7 @@ export default function Dashboard() {
                             <button onClick={handleAutomateRegistration}>Service A</button>
                         </li>
                         <li>                    
-                            <button onClick={handleAutomateBussPassRegistration}>Apply BussPass</button>
+                            <button onClick={handleAutomateBussPassRegistration}><img src={buspassimg} alt="buspass Applications" /></button>
                         </li>
                         <li>                    
                             <button onClick={handleAutomateRegistration}>Service C</button>
