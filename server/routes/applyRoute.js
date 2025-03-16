@@ -9,12 +9,11 @@ const cors = require('cors');
 
 const router = Router();
 
-router.use(
-  cors({
-    credentials: true,
-    origin: 'http://localhost:5173',
-  })
-);
+router.use(cors({
+  credentials: true,
+  origin: ['http://localhost:5173', 'http://65.2.167.243:5173']
+}));
+
 
 router.use(express.json()); // Add this to ensure the body is parsed correctly
 

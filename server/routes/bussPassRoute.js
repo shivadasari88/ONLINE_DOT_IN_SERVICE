@@ -14,12 +14,11 @@ const tesseract = require('tesseract.js');
 
 const router = Router();
 
-router.use(
-  cors({
+router.use(cors({
     credentials: true,
-    origin: 'http://localhost:5173',
-  })
-);
+    origin: ['http://localhost:5173', 'http://65.2.167.243:5173']
+}));
+
 router.use(express.json());
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });

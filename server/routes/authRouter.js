@@ -8,12 +8,11 @@ const path = require('path');
 
 //middleware
 
-router.use(
-    cors({
-        credentials:true,
-        origin:'http://localhost:5173'
-    })
-)
+router.use(cors({
+    credentials: true,
+    origin: ['http://localhost:5173', 'http://65.2.167.243:5173']
+}));
+
 
 // Set up multer for file uploads
 const storage = multer.diskStorage({

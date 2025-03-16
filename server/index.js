@@ -9,9 +9,10 @@ const app = express();
 
 // Configure CORS middleware (replace '*' with specific origins if needed) it is not secure
 app.use(cors({
-    origin: 'http://localhost:5173', // Replace with your frontend origin
-    credentials: true // Enable credentials
+    credentials: true,
+    origin: ['http://localhost:5173', 'http://65.2.167.243:5173']
 }));
+
 
 //databse connection
 mongoose.connect(process.env.MONGO_URI)
