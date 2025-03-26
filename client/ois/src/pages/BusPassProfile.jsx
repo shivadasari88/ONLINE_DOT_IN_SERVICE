@@ -12,6 +12,9 @@ const BusPassProfile = () => {
         parsedbonofideData: {}
     });
     const [isEditing, setIsEditing] = useState(false);
+    const [status, setStatus] = useState("");  // ✅ Moved inside the component
+    const [remarks, setRemarks] = useState("");  // ✅ Moved inside the component
+
 
         const { user, setUser } = useContext(UserContext);
         const navigate = useNavigate();
@@ -78,13 +81,24 @@ const BusPassProfile = () => {
                     try {
                         const response = await axios.post('/applyBusPass', {
                             username: user.name,
+                            email: user.email,
                             latitude,
                             longitude
                         });
+                        
+                        console.log("Response Data:", response.data); // ✅ Debugging Step
+
+                        // ✅ Update frontend with the latest application status & remarks
+                        setStatus(response.data.applicationStatus || "N/A");
+                        setRemarks(response.data.applicationRemarks || "N/A");
+
+
                         toast.success('Application submitted successfully for Bus Pass');
                     } catch (error) {
                         console.error('Error applying:', error);
                         toast.error('Failed to submit application');
+                        setStatus("Failed");
+                        setRemarks("Error occurred while applying.");
                     }
                 },
                 (err) => {

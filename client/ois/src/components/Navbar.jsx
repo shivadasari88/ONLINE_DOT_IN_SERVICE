@@ -24,6 +24,7 @@ function Navbar() {
     { text: "Services", icon: <AccountTreeIcon />, link: "/services" },
     { text: "Dashboard", icon: <DashboardIcon />, link: "/dashboard" },
     { text: "ProfilePage", icon: <AssignmentIndIcon />, link: "/profilepage" },
+    { text: "history", icon: <AssignmentIndIcon />, link: "/history" },
     { text: "Register", icon: <AppRegistrationIcon />, link: "/register" },
     { text: "Login", icon: <LoginIcon />, link: "/login" },
   ];
@@ -45,6 +46,7 @@ function Navbar() {
         <Link to="/dashboard">Dashboard</Link>
         <Link to="/profilepage">Profile</Link>
         <Link to="/services">Services</Link>
+        <Link to="/history">Application History</Link>
         <Link to="/register">Register</Link>
         <Link to="/login">Login</Link>
       </div>
