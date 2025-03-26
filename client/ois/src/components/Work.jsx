@@ -1,7 +1,7 @@
 import React from "react";
 import PickMeals from "../Assets/profilecheck-women.png";
 import ChooseMeals from "../Assets/expert-approved-cartoon-character-holding-checkmark-symbol-hand-finished-task-done-sign-satisfactory-official-sanction-acceptance.png";
-import DeliveryMeals from "../Assets/choose-image.png";
+import DeliveryMeals from "../Assets/select-concept.png";
 
 const Work = () => {
   const workInfoData = [

@@ -10,7 +10,11 @@ import { UserContextProvider } from './contexts/userContext';
 import Dashboard from './pages/Dashboard';
 import UpdateProfile from './pages/Updateprofile';
 import ProfilePage from './pages/ProfilePage';
+import BusPassProfile from './pages/BusPassProfile';
+import Services from './pages/Services';
 import Home from "./components/Home";
+import Footer from '../src/components/Footer';
+
 
 axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 axios.defaults.withCredentials = true;
@@ -28,7 +32,10 @@ function App() {
           <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/updateprofile' element={<UpdateProfile />} />
           <Route path='/profilepage' element={<ProfilePage />} />
+          <Route path='/services' element={<Services />} />
+          <Route path='/buspassprofile' element={<BusPassProfile />} />
         </Routes>
+        <Footer /> 
       </UserContextProvider>
     </>
   );

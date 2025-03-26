@@ -94,6 +94,11 @@ export default function UpdateProfile() {
             <form onSubmit={updateUser}>
                 <div className='feilds'>
                     <h1>BASIC INPUTS</h1>
+                    <h2>NOTE</h2>
+                    <h3>-name should be same as registerd Name</h3>
+                    <h3>-photo should be below 100 kb</h3>
+                    <h3>-mandate to submit memo,photo and fill name, phone, gender, photo</h3>
+
                     <ul>
                         <li>
                             <label>Name</label>

@@ -1,5 +1,5 @@
 import React from "react";
-import Logo from "../Assets/Logo.svg";
+//import Logo from "../Assets/Logo.svg";
 import { BsTwitter } from "react-icons/bs";
 import { SiLinkedin } from "react-icons/si";
 import { BsYoutube } from "react-icons/bs";
@@ -10,13 +10,20 @@ const Footer = () => {
     <div className="footer-wrapper">
       <div className="footer-section-one">
         <div className="footer-logo-container">
-          <img src={Logo} alt="" />
+          {
+           // <img src={Logo} alt="" />
+          }
+          <h1>O.IS</h1>
         </div>
         <div className="footer-icons">
-          <BsTwitter />
-          <SiLinkedin />
-          <BsYoutube />
-          <FaFacebookF />
+          <a
+        href="https://www.linkedin.com/company/online-dot-in-service"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="linkedin-icon"
+      >
+        <SiLinkedin />
+      </a>
         </div>
       </div>
       <div className="footer-section-two">
@@ -29,9 +36,8 @@ const Footer = () => {
           <span>Work</span>
         </div>
         <div className="footer-section-columns">
-          <span>6304893242</span>
-          <span>onlinedotinservice@gmail.com</span>
-          <span>contact@o-is.com</span>
+          <span>  <a href="mailto:o.is.ceoandfdr@gmail.com">o.is.ceoandfdr@gmail.com</a>
+          </span>
         </div>
         <div className="footer-section-columns">
           <span>Terms & Conditions</span>

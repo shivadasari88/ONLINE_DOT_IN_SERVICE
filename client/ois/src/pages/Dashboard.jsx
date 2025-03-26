@@ -1,125 +1,81 @@
-/*
-import { useContext} from 'react'
-import { UserContext, UserContextProvider } from '../contexts/userContext'
-
-
-export default function Dashboard() {
-    const {user} = useContext(UserContext)
-  return (
-    <div>
-       <h1>Dashboard</h1>
-       {!!user && (<h2>Hi {user.name}!</h2>)}
-    </div>
-  )
-}
-  */
-
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../contexts/userContext';
 import axios from 'axios';
-import { toast } from 'react-hot-toast'
-
+import { toast } from 'react-hot-toast';
+import { SiLinkedin } from 'react-icons/si';
+import { AiOutlineFileSearch, AiOutlineCloudUpload, AiOutlineCheckCircle } from 'react-icons/ai';
+import { FiLogOut } from 'react-icons/fi';
 
 export default function Dashboard() {
-    const { user, setUser } = useContext(UserContext);
+    const { user } = useContext(UserContext);
     const navigate = useNavigate();
 
-    // Function to handle profile update (navigate to profile update page)
+    // Navigate to profile update
     const handleUpdateProfile = () => {
-        navigate('/updateprofile'); // Assumes you have an UpdateProfile component routed at '/update-profile'
+        navigate('/updateprofile');
     };
 
-    // Function to simulate automating registration (you might want to integrate with a backend or automation service)
-    const handleAutomateRegistration  = async () => {
-        console.log('Automating registration for:', user.name);
-
-        // Implement the logic to automate registration
-        // This might involve setting some state, calling a backend service, etc.
+    // Simulate automation for bus pass application
+    const handleAutomateBusPass = async () => {
         try {
-            const response = await axios.post('/apply', { username: user.name });
-            toast.success('application submitted successfully')
+            await axios.post('/applyBusPass', { username: user.name });
+            toast.success('Bus pass application submitted successfully!');
         } catch (error) {
-            console.error('error applying:',error)
-            toast.error('failed to submit application');
-            
+            toast.error('Failed to submit bus pass application.');
         }
     };
-    /*
-
-    const handleAutomateBussPassRegistration  = async () => {
-        console.log('Automating registration of bussPass for:', user.name);
-
-        // Implement the logic to automate registration
-        // This might involve setting some state, calling a backend service, etc.
-        try {
-            const response = await axios.post('/applyBusPass', { username: user.name });
-            toast.success('application submitted successfully for busPass')
-        } catch (error) {
-            console.error('error applying:',error)
-            toast.error('failed to submit application');
-            
-        }
-    };
-    */
-    const handleAutomateBussPassRegistration = async () => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                async (position) => {
-                    const latitude = position.coords.latitude;
-                    const longitude = position.coords.longitude;
-    
-                    console.log(`User location: ${latitude}, ${longitude}`);
-    
-                    try {
-                        const response = await axios.post('/applyBusPass', {
-                            username: user.name,
-                            latitude,
-                            longitude
-                        });
-                        toast.success('Application submitted successfully for Bus Pass');
-                    } catch (error) {
-                        console.error('Error applying:', error);
-                        toast.error('Failed to submit application');
-                    }
-                },
-                (err) => {
-                    console.error('Geolocation error:', err.message);
-                    toast.error('Failed to get location. Please enable location services.');
-                }
-            );
-        } else {
-            toast.error('Geolocation is not supported by your browser');
-        }
-    };
-    
 
     return (
-        <div className='dashboard'>
-            
-            <div >
-                <div>
-                    <h1>Dashboard</h1>
-                    {!!user && <h2>Hi {user.name}!</h2>}
-                </div>
-                <div className='updateProfile'>
-                    <h1>UPDATE PROFILE</h1>
+        <div className='dashboard-container'>
+            {/* Header */}
+            <div className='dashboard-header'>
+                <h1>O.IS Dashboard</h1>
+                {!!user && <h2>Hi {user.name}, Welcome to O.IS!</h2>}
+                <p>Your one-click solution for applications & services.</p>
+            </div>
+
+            {/* Profile Section */}
+            <div className='dashboard-card profile-card'>
+                <div className='profile-info'>
+                    <AiOutlineCheckCircle className='icon' />
+                    <h2>Profile</h2>
+                    <p>Ensure your details are up-to-date for quick form filling.</p>
                     <button onClick={handleUpdateProfile}>Update Profile</button>
                 </div>
-                <div className='services'>
-                    <h1>SERVICES</h1>
-                    <ul>
-                        <li>
-                            <button onClick={handleAutomateRegistration}>Service A</button>
-                        </li>
-                        <li>                    
-                            <button onClick={handleAutomateBussPassRegistration}>Apply buss pass</button>
-                        </li>
-                        <li>                    
-                            <button onClick={handleAutomateRegistration}>Service C</button>
-                        </li>
-                    </ul>
-                </div>
+            </div>
+
+            {/* AI-Based Form Filling */}
+            <div className='dashboard-card form-filling'>
+                <AiOutlineFileSearch className='icon' />
+                <h2>AI Form Filling</h2>
+                <p>Paste a form link & let O.IS fill it automatically.</p>
+                <input type="text" placeholder="Paste form link here..." />
+                <button>Auto-Fill Form</button>
+            </div>
+
+            {/* Suggested Services */}
+            <div className='dashboard-card services-card'>
+                <h2>Suggested Services</h2>
+                <button onClick={handleAutomateBusPass}>Apply for Bus Pass</button>
+                <button>Apply for Scholarship</button>
+                <button>Apply for Job Exams</button>
+            </div>
+
+            {/* Uploaded Documents */}
+            <div className='dashboard-card docs-card'>
+                <AiOutlineCloudUpload className='icon' />
+                <h2>Uploaded Documents</h2>
+                <p>Manage your documents for auto-filling forms.</p>
+                <button>Upload Document</button>
+            </div>
+
+            {/* Support Section */}
+            <div className='dashboard-card support-card'>
+                <h2>Need Help?</h2>
+                <p>Check FAQs or contact support.</p>
+                <button>View FAQs</button>
+                <button>Contact Support</button>
             </div>
         </div>
     );

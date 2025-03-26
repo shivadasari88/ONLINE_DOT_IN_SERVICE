@@ -104,7 +104,7 @@ console.log(`User's Address: ${fullAddress}`);
             return res.status(500).json({ error: 'Failed to find nearest counter' });
         }
 
-        const browser = await firefox.launch({ headless: true });
+        const browser = await firefox.launch({ headless: true});
         const context = await browser.newContext({
             permissions: ['geolocation'],
             geolocation: { latitude, longitude },
@@ -210,7 +210,21 @@ console.log(`User's Address: ${fullAddress}`);
     const instituteMap = {
         "AADHYA  DEGREE COLLEGE, ANUPURAM,KAPRA---D5915": "32282",
         "St. MARTINS ENGINEERING COLLEGE": "30899",
-        
+        "ACE ENG.COLLGE,ANKUSHPUR---T3246":"31908",
+        "BVRIT, BACHUPALLY,HYD.---T3389":"32353",
+        "CBIT GANDIPET---P0031":"32623",
+        "CBIT---T3001":"31754",
+        "CMR COLL OF ENGGANDTECH KANDLA KOYALA---T3175":"31576",
+        "CMR ENGINEERING COLLEGE, KANDLAKOYA---T3328":"32116",
+        "CMR INSTITUTE OF TECHNOLOGY.,KANDLAKOYA---T3220":"30850",
+        "CVR COLLEGE OF ENGINEERING, MANGALPALLY---T3141":"31616",
+        "MALLA REDDY COLLEGE OF ENGINEERING,MYSAMMAGUDA.---T3217":"30844",
+        "MALLA REDDY INSTITUTE OF TECHNOLOGY AND SCIENCE,MYSAMMAGUDA---T3214":"30840",
+        "MARRI LAXMA REDDY INST.TECH. AND MANAGMENT,DUNDIGAL---T3316":"32026",
+        "NARASIMHA REDDY ENG COLLEGE,MAISAMMAGUDA---T3238":"31710",
+        "ST PETERS ENGINEERING COLLEGE MAISAMMAGUDA,MEDCHAL---T3242":"31479",
+        "TKR COLLEGE OF ENGG AND TECH, MEDBOWLI, MEERPET---T3169":"30759",
+        "TKR INST. OF MANAGEMENT   SCIENCE,MEDIBOWLI MEERPET.---P3112":"32666"
       };
       
       const instituteValue = instituteMap[profileData.parsedbonofideData.collegeName];
@@ -284,6 +298,98 @@ const collegeMaps = {
     "B.Tech 3rd Year": "027C",
     "B.Tech 4th Year": "027D"
   },
+  "TKR INST. OF MANAGEMENT   SCIENCE,MEDIBOWLI MEERPET.---P3112":{
+    "M.B.A 1st Yr":"037A",
+    "M.B.A 2nd Yr":"037B"
+
+  },
+  "TKR COLLEGE OF ENGG AND TECH, MEDBOWLI, MEERPET---T3169":{
+    "B.Tech 1st Year": "027A",
+    "B.Tech 2nd Year": "027B",
+    "B.Tech 3rd Year": "027C",
+    "B.Tech 4th Year": "027D"
+  },
+  "ST PETERS ENGINEERING COLLEGE MAISAMMAGUDA,MEDCHAL---T3242":{
+    "B.Tech 1st Year": "027A",
+    "B.Tech 2nd Year": "027B",
+    "B.Tech 3rd Year": "027C",
+    "B.Tech 4th Year": "027D"
+  },
+  "NARASIMHA REDDY ENG COLLEGE,MAISAMMAGUDA---T3238":{
+    "B.Tech 1st Year": "027A",
+    "B.Tech 2nd Year": "027B",
+    "B.Tech 3rd Year": "027C",
+    "B.Tech 4th Year": "027D"
+  },
+  "MARRI LAXMA REDDY INST.TECH. AND MANAGMENT,DUNDIGAL---T3316":{
+    "B.Tech 1st Year": "027A",
+    "B.Tech 2nd Year": "027B",
+    "B.Tech 3rd Year": "027C",
+    "B.Tech 4th Year": "027D"
+  },
+  
+  "ACE ENG.COLLGE,ANKUSHPUR---T3246":{
+    "B.Tech 1st Year": "027A",
+    "B.Tech 2nd Year": "027B",
+    "B.Tech 3rd Year": "027C",
+    "B.Tech 4th Year": "027D"
+  },
+  "BVRIT, BACHUPALLY,HYD.---T3389":{
+    "B.Tech 1st Year": "027A",
+    "B.Tech 2nd Year": "027B",
+    "B.Tech 3rd Year": "027C",
+    "B.Tech 4th Year": "027D"
+  },
+  "CBIT GANDIPET---P0031":{
+    "B.Tech 1st Year": "027A",
+    "B.Tech 2nd Year": "027B",
+    "B.Tech 3rd Year": "027C",
+    "B.Tech 4th Year": "027D"
+  },
+  "CBIT---T3001":{
+    "B.Tech 1st Year": "027A",
+    "B.Tech 2nd Year": "027B",
+    "B.Tech 3rd Year": "027C",
+    "B.Tech 4th Year": "027D"
+},
+  "CMR COLL OF ENGGANDTECH KANDLA KOYALA---T3175":{
+    "B.Tech 1st Year": "027A",
+    "B.Tech 2nd Year": "027B",
+    "B.Tech 3rd Year": "027C",
+    "B.Tech 4th Year": "027D"
+  },
+  "CMR ENGINEERING COLLEGE, KANDLAKOYA---T3328":{
+    "B.Tech 1st Year": "027A",
+    "B.Tech 2nd Year": "027B",
+    "B.Tech 3rd Year": "027C",
+    "B.Tech 4th Year": "027D"
+  },
+  "CMR INSTITUTE OF TECHNOLOGY.,KANDLAKOYA---T3220":{
+    "B.Tech 1st Year": "027A",
+    "B.Tech 2nd Year": "027B",
+    "B.Tech 3rd Year": "027C",
+    "B.Tech 4th Year": "027D"
+  },
+  "CVR COLLEGE OF ENGINEERING, MANGALPALLY---T3141":{
+    "B.Tech 1st Year": "027A",
+    "B.Tech 2nd Year": "027B",
+    "B.Tech 3rd Year": "027C",
+    "B.Tech 4th Year": "027D"
+  },
+  "MALLA REDDY COLLEGE OF ENGINEERING,MYSAMMAGUDA.---T3217":{
+    "B.Tech 1st Year": "027A",
+    "B.Tech 2nd Year": "027B",
+    "B.Tech 3rd Year": "027C",
+    "B.Tech 4th Year": "027D"
+  },
+  "MALLA REDDY INSTITUTE OF TECHNOLOGY AND SCIENCE,MYSAMMAGUDA---T3214":{
+    "B.Tech 1st Year": "027A",
+    "B.Tech 2nd Year": "027B",
+    "B.Tech 3rd Year": "027C",
+    "B.Tech 4th Year": "027D"
+  },
+
+
   // Add more colleges if needed...
 };
 

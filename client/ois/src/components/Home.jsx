@@ -1,12 +1,10 @@
 import React from "react";
 import BannerBackground from "../Assets/home-banner-background.png";
 import BannerImage from "../Assets/form-check.png";
-import Navbar from "./Navbar";
 import About from "./About";
 import Work from "./Work";
 import Testimonial from "./Testimonial";
 import Contact from "./Contact";
-import Footer from "./Footer";
 import { FiArrowRight } from "react-icons/fi";
 
 
@@ -42,7 +40,7 @@ const Home = () => {
       <Work />
       <Testimonial />
       <Contact />
-      <Footer />
+
     </div>
   );
 };
