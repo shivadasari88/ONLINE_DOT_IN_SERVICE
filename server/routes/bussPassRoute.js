@@ -17,7 +17,7 @@ const router = Router();
 
 router.use(cors({
     credentials: true,
-    origin: ['http://localhost:5173', 'http://65.2.167.243:5173']
+    origin: ['http://localhost:5173', 'http://15.206.117.255:5173']
 }));
 
 router.use(express.json());
@@ -122,7 +122,7 @@ console.log(`User's Address: ${fullAddress}`);
             return res.status(500).json({ error: 'Failed to find nearest counter' });
         }
 
-        const browser = await firefox.launch({ headless: false});
+        const browser = await firefox.launch({ headless: true});
         const context = await browser.newContext({
             permissions: ['geolocation'],
             geolocation: { latitude, longitude },

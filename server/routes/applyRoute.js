@@ -11,7 +11,7 @@ const router = Router();
 
 router.use(cors({
   credentials: true,
-  origin: ['http://localhost:5173', 'http://65.2.167.243:5173']
+  origin: ['http://localhost:5173', 'http://15.206.117.255:5173']
 }));
 
 
@@ -20,7 +20,10 @@ router.use(express.json()); // Add this to ensure the body is parsed correctly
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 async function fillForm(profileData) {
-  const browser = await puppeteer.launch();
+  
+  const browser = await puppeteer.launch({
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],// for cloud service
+  });
   const page = await browser.newPage();
   await page.goto('https://forms.gle/3N82sCRA2dQsdBX67');
 

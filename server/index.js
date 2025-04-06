@@ -11,7 +11,7 @@ const app = express();
 // Configure CORS middleware (replace '*' with specific origins if needed) it is not secure
 app.use(cors({
     credentials: true,
-    origin: ['http://localhost:5173', 'http://65.2.167.243:5173']
+    origin: ['http://localhost:5173', 'http://15.206.117.255:5173']
 }));
 
 
