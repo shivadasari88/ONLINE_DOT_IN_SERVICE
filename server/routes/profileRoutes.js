@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Profile = require('../models/profile');
+const { chromium } = require('playwright');
 
 // ✅ Route 1: Get User Profile Data
 router.get('/:email', async (req, res) => {
@@ -42,5 +43,41 @@ router.put('/:email', async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 });
+
+router.post('/fill-form', async (req, res) => {
+    const { url } = req.body;
+  
+    if (!url) {
+      return res.status(400).json({ message: 'URL is required.' });
+    }
+  
+    try {
+      const browser = await chromium.launch({ headless: false }); // set headless: true later
+      const page = await browser.newPage();
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
+  
+      // Scrape all input fields
+      const inputFields = await page.$$eval('input, select, textarea', (elements) => {
+        return elements.map(el => ({
+          tagName: el.tagName,
+          type: el.type || null,
+          name: el.name || null,
+          id: el.id || null,
+          placeholder: el.placeholder || null,
+          label: el.labels && el.labels.length > 0 ? el.labels[0].innerText : null
+        }));
+      });
+  
+      console.log('Scraped Fields:', inputFields);
+  
+      await browser.close();
+  
+      res.json({ fields: inputFields });
+  
+    } catch (error) {
+      console.error('Error scraping form:', error);
+      res.status(500).json({ message: 'Failed to process the URL.', error: error.message });
+    }
+  });
 
 module.exports = router;

@@ -16,6 +16,10 @@ export default function Dashboard() {
         navigate('/updateprofile');
     };
 
+    const handleAutoFill = ()=> {
+        navigate('/formfiller')
+    }
+
     // Simulate automation for bus pass application
     const handleAutomateBusPass = async () => {
         try {
@@ -50,9 +54,9 @@ export default function Dashboard() {
                 <AiOutlineFileSearch className='icon' />
                 <h2>AI Form Filling</h2>
                 <p>Paste a form link & let O.IS fill it automatically.</p>
-                <input type="text" placeholder="Paste form link here..." />
-                <button>Auto-Fill Form</button>
-            </div>
+                {/*<input type="text" placeholder="Paste form link here..." />*/}
+                <button onClick={handleAutoFill}>AUTO-FILL BY URL</button>
+                </div>
 
             {/* Suggested Services */}
             <div className='dashboard-card services-card'>

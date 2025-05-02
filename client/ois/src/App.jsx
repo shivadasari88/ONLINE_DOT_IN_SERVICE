@@ -15,6 +15,9 @@ import Services from './pages/Services';
 import Home from "./components/Home";
 import Footer from '../src/components/Footer';
 import HistoryPage from "./pages/HistoryPage"; // ✅ Import
+import FormFiller from "./pages/FormFiller"; 
+import NoteFile from "./legal/NoteFile"; // ✅ Import
+
 
 
 axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
@@ -36,6 +39,8 @@ function App() {
           <Route path="/history" element={<HistoryPage />} />
           <Route path='/services' element={<Services />} />
           <Route path='/buspassprofile' element={<BusPassProfile />} />
+          <Route path="/formfiller" element={<FormFiller />} />
+          <Route path="/notefile" element={<NoteFile />} />
         </Routes>
         <Footer /> 
       </UserContextProvider>

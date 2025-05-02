@@ -1,4 +1,6 @@
 import React from "react";
+import { Link } from 'react-router-dom';
+
 //import Logo from "../Assets/Logo.svg";
 import { BsTwitter } from "react-icons/bs";
 import { SiLinkedin } from "react-icons/si";
@@ -41,8 +43,8 @@ const Footer = () => {
         </div>
         <div className="footer-section-columns">
           <span>Terms & Conditions</span>
-          <span>Privacy Policy</span>
-        </div>
+          <Link to="/notefile">Privacy Policy</Link>
+          </div>
       </div>
     </div>
   );
