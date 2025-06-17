@@ -38,7 +38,7 @@ const Footer = () => {
           <span>Work</span>
         </div>
         <div className="footer-section-columns">
-          <span>  <a href="mailto:o.is.ceoandfdr@gmail.com">o.is.ceoandfdr@gmail.com</a>
+          <span>  <a href="mailto:info@onlinedotinservice.com">info@onlinedotinservice.com</a>
           </span>
         </div>
         <div className="footer-section-columns">

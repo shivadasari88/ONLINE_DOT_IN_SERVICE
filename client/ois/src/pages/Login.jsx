@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-
+import { UserContext } from '../contexts/userContext'; // Make sure the path is correct
 
 export default function Login() {
     const navigate = useNavigate();
+    const { setUser } = useContext(UserContext);
+
     const [loginData, setLoginData] = useState({
         email: '',
         password: '',
@@ -19,17 +21,27 @@ export default function Login() {
                 email,
                 password,
             });
+
             if (response.data.error) {
                 toast.error(response.data.error);
             } else {
-                // Assuming the login response includes a token or similar
-                // Save it to localStorage or context for authenticated state management
-                // localStorage.setItem('authToken', response.data.token);
+                // ✅ Save email for reference if needed
+                localStorage.setItem('email', email);
 
-                                // ✅ Store the email in localStorage
-                                localStorage.setItem('email', email);
-                setLoginData({ email: '', password: '' }); // Reset form fields
-                navigate('/dashboard'); // Navigate to the homepage or dashboard as appropriate
+                // ✅ Fetch user details after login
+                const userResponse = await axios.get('/profile');
+
+                if (userResponse.data && userResponse.data.name) {
+                    // ✅ Save to localStorage for persistence
+                    localStorage.setItem('user', JSON.stringify(userResponse.data));
+
+                    // ✅ Update context so components re-render instantly
+                    setUser(userResponse.data);
+                }
+
+                // ✅ Reset form and navigate
+                setLoginData({ email: '', password: '' });
+                navigate('/');
             }
         } catch (error) {
             toast.error('An error occurred during login');
@@ -39,18 +51,17 @@ export default function Login() {
 
     return (
         <div className='login'>
-           
             <form onSubmit={loginUser}>
                 <label>Email</label>
                 <input 
-                    type='email' // Use type 'email' for email input for appropriate keyboard and validation
+                    type='email'
                     placeholder='Enter email...'
                     value={loginData.email}
                     onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                 />
                 <label>Password</label>
                 <input 
-                    type='password' // Use type 'password' to hide password input
+                    type='password'
                     placeholder='Enter password...'
                     value={loginData.password}
                     onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}

@@ -28,6 +28,7 @@ app.use(express.urlencoded({extended:false}))
 app.use('/',require('./routes/authRouter'));
 app.use("/",require('./routes/applyRoute'));
 app.use("/",require('./routes/bussPassRoute'));
+app.use("/",require('./routes/schoolBussPassRoute'));
 app.use('/api/profile', profileRoutes);
 app.use("/api/application-history", applicationHistoryRoutes);
 

@@ -12,6 +12,11 @@ export default function ServicesPage() {
         navigate('/buspassprofile'); // Assumes you have an UpdateProfile component routed at '/update-profile'
     };
 
+    const handleSchoolBusPassProfile = () => {
+        navigate('/schoolbuspassprofile'); // Assumes you have an UpdateProfile component routed at '/update-profile'
+    };
+
+
     // Function to simulate automating registration (you might want to integrate with a backend or automation service)
     const handleAutomateRegistration  = async () => {
         console.log('Automating registration for:', user.name);
@@ -30,13 +35,17 @@ export default function ServicesPage() {
 
     return (
         <div className='services'>
-            <h1>Select a Service</h1>
-            <div className='registraionCheck'>
+           <h1>Select a Service for monthly general pass</h1>
+           {/*  
+           <div className='registraionCheck'>
             <button onClick={handleAutomateRegistration}>AUTOMATION FOR REGISTRAION CHECK</button>
-            </div>         
+            </div>
+           */}         
             <div className='BuspassRegistraion'>
-            <button onClick={handleBusPassProfile}> HYDERABAD CITY BUSS PASS</button>
-
+            <button onClick={handleBusPassProfile}> HYDERABAD CITY BUSS PASS FOR COLLEGE STUDENTS</button>
+            </div>
+            <div className='SchoolBuspassRegistraion'>
+            <button onClick={handleSchoolBusPassProfile}> HYDERABAD CITY BUSS PASS FOR SCHOOL STUDENTS</button>
             </div>
         </div>
     );

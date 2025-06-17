@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard';
 import UpdateProfile from './pages/Updateprofile';
 import ProfilePage from './pages/ProfilePage';
 import BusPassProfile from './pages/BusPassProfile';
+import SchoolBusPassProfile from './pages/SchoolBusPassProfile';
 import Services from './pages/Services';
 import Home from "./components/Home";
 import Footer from '../src/components/Footer';
@@ -20,7 +21,7 @@ import NoteFile from "./legal/NoteFile"; // ✅ Import
 
 
 
-axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+axios.defaults.baseURL ="http://localhost:3000";
 axios.defaults.withCredentials = true;
 
 function App() {
@@ -30,15 +31,16 @@ function App() {
         <Navbar /> {/* ✅ Navbar is here */}
         <Toaster position='bottom-right' toastOptions={{ duration: 2000 }} />
         <Routes>
-          <Route path='/' element={<Home />} />
+          <Route path='/' element={<Dashboard />} />
           <Route path='/register' element={<Register />} />
           <Route path='/login' element={<Login />} />
-          <Route path='/dashboard' element={<Dashboard />} />
-          <Route path='/updateprofile' element={<UpdateProfile />} />
+        {/*  <Route path='/dashboard' element={<Home />} />   */}
+          <Route path='/updateprofile' element={<UpdateProfile />} /> 
           <Route path='/profilepage' element={<ProfilePage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path='/services' element={<Services />} />
           <Route path='/buspassprofile' element={<BusPassProfile />} />
+          <Route path='/schoolbuspassprofile' element={<SchoolBusPassProfile />} />
           <Route path="/formfiller" element={<FormFiller />} />
           <Route path="/notefile" element={<NoteFile />} />
         </Routes>

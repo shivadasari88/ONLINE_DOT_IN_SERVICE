@@ -4,22 +4,25 @@ import { createContext, useState, useEffect } from 'react';
 export const UserContext = createContext({});
 
 export function UserContextProvider({ children }) {
-    const [user, setUser] = useState(null);
-    
+    const [user, setUser] = useState(() => {
+        // Load from localStorage on first render
+        const storedUser = localStorage.getItem('user');
+        return storedUser ? JSON.parse(storedUser) : null;
+    });
+
     useEffect(() => {
-        // The check !user ensures the request is only made once, when the component mounts.
-        // If you plan on allowing the user to "log out" within the app,
-        // you might need additional logic here to handle that scenario.
+        // Only fetch if not already in state
         if (!user) {
-            axios.get('/profile').then(({ data }) => {
-                setUser(data);
-            }).catch(error => {
-                console.error("Failed to fetch user profile:", error);
-                // You might want to handle errors more gracefully here,
-                // depending on your application's requirements.
-            });
+            axios.get('/profile')
+                .then(({ data }) => {
+                    setUser(data);
+                    localStorage.setItem('user', JSON.stringify(data)); // Save to localStorage
+                })
+                .catch((error) => {
+                    console.error("Failed to fetch user profile:", error);
+                });
         }
-    }, [user]); // Adding 'user' here as a dependency, though in this specific case it might be unnecessary due to the conditional check inside the effect.
+    }, [user]);
 
     return (
         <UserContext.Provider value={{ user, setUser }}>

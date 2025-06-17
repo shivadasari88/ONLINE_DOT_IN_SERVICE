@@ -22,7 +22,7 @@ function Navbar() {
   const menuOptions = [
     { text: "Home", icon: <HomeIcon />, link: "/" },
     { text: "Services", icon: <AccountTreeIcon />, link: "/services" },
-    { text: "Dashboard", icon: <DashboardIcon />, link: "/dashboard" },
+    //{ text: "Dashboard", icon: <DashboardIcon />, link: "/dashboard" },
     { text: "ProfilePage", icon: <AssignmentIndIcon />, link: "/profilepage" },
     { text: "history", icon: <AssignmentIndIcon />, link: "/history" },
     { text: "Register", icon: <AppRegistrationIcon />, link: "/register" },
@@ -43,7 +43,7 @@ function Navbar() {
       {/* ✅ Desktop Navigation Links */}
       <div className="navbar-links-container">
         <Link to="/">Home</Link>
-        <Link to="/dashboard">Dashboard</Link>
+       {/* <Link to="/dashboard">Dashboard</Link> */}
         <Link to="/profilepage">Profile</Link>
         <Link to="/services">Services</Link>
         <Link to="/history">Application History</Link>
