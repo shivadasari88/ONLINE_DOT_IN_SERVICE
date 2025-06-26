@@ -1712,16 +1712,26 @@ const BusPassProfile = () => {
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Course and Year
+                                        Class
                                     </label>
-                                    <input
-                                        type="text"
+                                    <select
                                         name="course"
                                         value={profileData.parsedbonofideData?.course || ""}
                                         onChange={(e) => handleChange(e, 'parsedbonofideData')}
                                         disabled={!isEditing}
                                         className={`block w-full rounded-md border ${isEditing ? 'border-gray-300 focus:border-gray-500 focus:ring-gray-500' : 'border-transparent bg-gray-50'} py-2 px-3 shadow-sm`}
-                                    />
+                                    >
+                                        <option value="">Select a Class</option>
+                                        <option value="BC-A">BC-A</option>
+                                        <option value="BC-B">BC-B</option>
+                                        <option value="BC-D">BC-D</option>
+                                        <option value="B.Tech 1st Year">B.Tech 1st Year</option>
+                                        <option value="B.Tech 2nd Year">B.Tech 2nd Year</option>
+                                        <option value="B.Tech 3rd Year">B.Tech 3rd Year</option>
+                                        <option value="B.Tech 4th Year">B.Tech 4th Year</option>
+                                        <option value="M.B.A 1st Yr">M.B.A 1st Yr</option>
+                                        <option value="M.B.A 2nd Yr">M.B.A 2nd Yr</option>
+                                    </select>
                                 </div>
 
                                 <div>

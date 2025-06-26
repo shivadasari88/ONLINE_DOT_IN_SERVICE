@@ -3,7 +3,7 @@ const express = require('express');
 const dotenv = require('dotenv').config();
 const puppeteer = require('puppeteer');
 const mongoose = require('mongoose');
-const Profile = require('../models/profile');
+const Profile = require('../models/user.js');
 const { Router } = express;
 const cors = require('cors');
 

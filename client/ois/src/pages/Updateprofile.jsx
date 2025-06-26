@@ -147,7 +147,6 @@ export default function UpdateProfile() {
                                                 name="bonofide" 
                                                 onChange={handleFileChange} 
                                                 className="hidden" 
-                                                required
                                             />
                                         </label>
                                     </div>

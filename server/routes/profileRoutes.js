@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const Profile = require('../models/profile');
 const { chromium } = require('playwright');
 const userAuth = require('../helpers/userAuth');
 const User = require('../models/user');

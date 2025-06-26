@@ -143,7 +143,7 @@ router.post('/applyBusPass', userAuth, async (req, res) => {
             await dialog.accept();
         });
 
-        await targetPage.waitForSelector('input#userProperties\\(sscpassfailyr\\)');
+       // await targetPage.waitForSelector('input#userProperties\\(sscpassfailyr\\)');
         //await targetPage.fill('input#userProperties\\(sscpassfailyr\\)',"2019");
         let passYear = profileData.parsedMemoData.examYear;  // Example input
 
@@ -1736,180 +1736,32 @@ router.post('/applyBusPass', userAuth, async (req, res) => {
 // Delay after selecting religion
 
 
-// Function to normalize course-year from bonafide
-function normalizeCourse(courseText) {
-    if (!courseText) return null;
-
-    let text = courseText.toLowerCase();
-
-    let course = '';
-    if (text.includes('b.tech') || text.includes('bitech') || text.includes('btech') || text.includes('b tech')) {
-        course = 'B.Tech';
-    } else if (text.includes('m.tech') || text.includes('mtech') || text.includes('m tech')) {
-        course = 'M.Tech';
-    } else if (text.includes('diploma')) {
-        course = 'Diploma';
-    } else if (text.includes('b.sc') || text.includes('bsc') || text.includes('b sc')) {
-        course = 'B.Sc';
-    } else if (text.includes('mba')) {
-        course = 'MBA';
-    } else {
-        course = 'Unknown Course';
-    }
-
-    // Handle year formats
-    let year = '';
-    if (text.includes('1st') || text.includes('first')) {
-        year = '1st Year';
-    } else if (text.includes('2nd') || text.includes('ii') || text.includes('second')) {
-        year = '2nd Year';
-    } else if (text.includes('3rd') || text.includes('iii') || text.includes('third')) {
-        year = '3rd Year';
-    } else if (text.includes('4th') || text.includes('iv') || text.includes('fourth') || text.includes('final')) {
-        year = '4th Year';
-    } else {
-        year = 'Unknown Year';
-    }
-
-    // Return the normalized course and year
-    if (course !== 'Unknown Course' && year !== 'Unknown Year') {
-        return `${course} ${year}`;
-    } else {
-        return null;
-    }
-}
-
-// College map for course-to-dropdown mapping
-const collegeMaps = {
-  "AADHYA  DEGREE COLLEGE, ANUPURAM,KAPRA---D5915": {
-    "BC-A": "3",
+          const classMap = {
+                  "BC-A": "3",
     "BC-B": "4",
     "BC-D": "6",
-  },
-  "St. MARTINS ENGINEERING COLLEGE": {
     "B.Tech 1st Year": "027A",
     "B.Tech 2nd Year": "027B",
     "B.Tech 3rd Year": "027C",
-    "B.Tech 4th Year": "027D"
-  },
-  "TKR INST. OF MANAGEMENT   SCIENCE,MEDIBOWLI MEERPET.---P3112":{
+    "B.Tech 4th Year": "027D",
     "M.B.A 1st Yr":"037A",
     "M.B.A 2nd Yr":"037B"
 
-  },
-  "TKR COLLEGE OF ENGG AND TECH, MEDBOWLI, MEERPET---T3169":{
-    "B.Tech 1st Year": "027A",
-    "B.Tech 2nd Year": "027B",
-    "B.Tech 3rd Year": "027C",
-    "B.Tech 4th Year": "027D"
-  },
-  "ST PETERS ENGINEERING COLLEGE MAISAMMAGUDA,MEDCHAL---T3242":{
-    "B.Tech 1st Year": "027A",
-    "B.Tech 2nd Year": "027B",
-    "B.Tech 3rd Year": "027C",
-    "B.Tech 4th Year": "027D"
-  },
-  "NARASIMHA REDDY ENG COLLEGE,MAISAMMAGUDA---T3238":{
-    "B.Tech 1st Year": "027A",
-    "B.Tech 2nd Year": "027B",
-    "B.Tech 3rd Year": "027C",
-    "B.Tech 4th Year": "027D"
-  },
-  "MARRI LAXMA REDDY INST.TECH. AND MANAGMENT,DUNDIGAL---T3316":{
-    "B.Tech 1st Year": "027A",
-    "B.Tech 2nd Year": "027B",
-    "B.Tech 3rd Year": "027C",
-    "B.Tech 4th Year": "027D"
-  },
-  
-  "ACE ENG.COLLGE,ANKUSHPUR---T3246":{
-    "B.Tech 1st Year": "027A",
-    "B.Tech 2nd Year": "027B",
-    "B.Tech 3rd Year": "027C",
-    "B.Tech 4th Year": "027D"
-  },
-  "BVRIT, BACHUPALLY,HYD.---T3389":{
-    "B.Tech 1st Year": "027A",
-    "B.Tech 2nd Year": "027B",
-    "B.Tech 3rd Year": "027C",
-    "B.Tech 4th Year": "027D"
-  },
-  "CBIT GANDIPET---P0031":{
-    "B.Tech 1st Year": "027A",
-    "B.Tech 2nd Year": "027B",
-    "B.Tech 3rd Year": "027C",
-    "B.Tech 4th Year": "027D"
-  },
-  "CBIT---T3001":{
-    "B.Tech 1st Year": "027A",
-    "B.Tech 2nd Year": "027B",
-    "B.Tech 3rd Year": "027C",
-    "B.Tech 4th Year": "027D"
-},
-  "CMR COLL OF ENGGANDTECH KANDLA KOYALA---T3175":{
-    "B.Tech 1st Year": "027A",
-    "B.Tech 2nd Year": "027B",
-    "B.Tech 3rd Year": "027C",
-    "B.Tech 4th Year": "027D"
-  },
-  "CMR ENGINEERING COLLEGE, KANDLAKOYA---T3328":{
-    "B.Tech 1st Year": "027A",
-    "B.Tech 2nd Year": "027B",
-    "B.Tech 3rd Year": "027C",
-    "B.Tech 4th Year": "027D"
-  },
-  "CMR INSTITUTE OF TECHNOLOGY.,KANDLAKOYA---T3220":{
-    "B.Tech 1st Year": "027A",
-    "B.Tech 2nd Year": "027B",
-    "B.Tech 3rd Year": "027C",
-    "B.Tech 4th Year": "027D"
-  },
-  "CVR COLLEGE OF ENGINEERING, MANGALPALLY---T3141":{
-    "B.Tech 1st Year": "027A",
-    "B.Tech 2nd Year": "027B",
-    "B.Tech 3rd Year": "027C",
-    "B.Tech 4th Year": "027D"
-  },
-  "MALLA REDDY COLLEGE OF ENGINEERING,MYSAMMAGUDA.---T3217":{
-    "B.Tech 1st Year": "027A",
-    "B.Tech 2nd Year": "027B",
-    "B.Tech 3rd Year": "027C",
-    "B.Tech 4th Year": "027D"
-  },
-  "MALLA REDDY INSTITUTE OF TECHNOLOGY AND SCIENCE,MYSAMMAGUDA---T3214":{
-    "B.Tech 1st Year": "027A",
-    "B.Tech 2nd Year": "027B",
-    "B.Tech 3rd Year": "027C",
-    "B.Tech 4th Year": "027D"
-  },
+      };
+      
+      const classValue = classMap[profileData.parsedbonofideData.course];
+      
+      if (classValue) {
+        //await page.waitForSelector('select[name="religion"]'); // Wait for the religion dropdown
+        //await page.select('select[name="religion"]', instituteValue);
+        await targetPage.selectOption('#instcourseid', classValue);
+        console.log(`Selected course: ${profileData.parsedbonofideData.course}`);
+      } else {
+        console.error("Course not found in the dropdown!");
+      }
+    
 
 
-  // Add more colleges if needed...
-};
-
-// Extract course from bonafide and normalize it
-const rawCourseText = profileData.parsedbonofideData.course; // From bonafide OCR extraction
-const normalizedCourse = normalizeCourse(rawCourseText);
-
-// Get the college map based on the college name from bonafide
-const collegeName = profileData.parsedbonofideData.collegeName;
-const collegeMap = collegeMaps[collegeName];
-
-// Check if the college exists in the map
-if (collegeMap && normalizedCourse) {
-    // Find the value for the course in the dropdown
-    const collegeValue = collegeMap[normalizedCourse];
-
-    if (collegeValue) {
-        // Select the appropriate option from the dropdown
-        await targetPage.selectOption('#instcourseid', collegeValue);
-
-    } else {
-        console.error(`❌ Course not found in the dropdown: ${normalizedCourse}`);
-    }
-} else {
-    console.error(`❌ College not found or course not detected.`);
-}
 
 
     // Select "Payment at Counter" (value="2")
