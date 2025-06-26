@@ -4,7 +4,6 @@ const cors = require('cors')
 const {mongoose} = require('mongoose')
 const cookieparser = require('cookie-parser')
 const profileRoutes = require('./routes/profileRoutes');
-const applicationHistoryRoutes = require("./routes/applicationHistory");
 
 const app = express();
 
@@ -30,7 +29,6 @@ app.use("/",require('./routes/applyRoute'));
 app.use("/",require('./routes/bussPassRoute'));
 app.use("/",require('./routes/schoolBussPassRoute'));
 app.use('/api/profile', profileRoutes);
-app.use("/api/application-history", applicationHistoryRoutes);
 
 
 

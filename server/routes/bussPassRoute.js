@@ -1,8 +1,9 @@
 const express = require('express');
 const dotenv = require('dotenv').config();
 const mongoose = require('mongoose');
-const Profile = require('../models/profile');
-const ApplicationHistory = require("../models/ApplicationHistory");
+const User = require('../models/user');
+const userAuth = require('../helpers/userAuth');
+
 const { Router } = express;
 const cors = require('cors');
 const axios = require('axios');
@@ -24,18 +25,6 @@ router.use(express.json());
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
-// Function to save application history
-const saveApplicationHistory = async (email, applicationName) => {
-    try {
-        await ApplicationHistory.create({
-            userEmail: email,
-            applicationName,
-            status: "Pending" // Initially pending
-        });
-    } catch (error) {
-        console.error("Error saving application history:", error);
-    }
-};
 
 
 async function getAddress(latitude, longitude) {
@@ -84,22 +73,17 @@ async function getAddress(latitude, longitude) {
     }
 }
 
-router.post('/applyBusPass', async (req, res) => {
-    const { username, email, latitude, longitude } = req.body;
+router.post('/applyBusPass', userAuth, async (req, res) => {
+    const { userId, latitude, longitude } = req.body;
 
-    const profileData = await Profile.findOne({ username });
+    const profileData = await User.findOne({ _id: userId });
     
-    if (!username || !email ||  !latitude || !longitude) {
+    if (!userId || !latitude || !longitude) {
         return res.status(400).json({ error: "Missing required fields" });
     }
 
-    console.log(`Received location: Latitude ${latitude}, Longitude ${longitude}`);
 
     try {
-
-
-        // Save application history
-        await saveApplicationHistory(email, "Bus Pass");
 
         const addressData = await getAddress(latitude, longitude);
         if (!addressData) {
@@ -108,7 +92,6 @@ router.post('/applyBusPass', async (req, res) => {
        
         
         const { houseNo, street, city, district, state, postalCode, landmark, fullAddress } = addressData;
-console.log(`User's Address: ${fullAddress}`);
 
         let nearestCounter;
         try {
@@ -116,13 +99,12 @@ console.log(`User's Address: ${fullAddress}`);
             if (!nearestCounter) {
                 return res.status(500).json({ error: 'No bus pass counters found' });
             }
-            console.log(`Nearest Counter: ${nearestCounter.name} - ${nearestCounter.address}`);
         } catch (error) {
             console.error('Error finding nearest counter:', error);
             return res.status(500).json({ error: 'Failed to find nearest counter' });
         }
 
-        const browser = await firefox.launch({ headless: true});
+        const browser = await firefox.launch({ headless: false});
         const context = await browser.newContext({
             permissions: ['geolocation'],
             geolocation: { latitude, longitude },
@@ -163,7 +145,7 @@ console.log(`User's Address: ${fullAddress}`);
 
         await targetPage.waitForSelector('input#userProperties\\(sscpassfailyr\\)');
         //await targetPage.fill('input#userProperties\\(sscpassfailyr\\)',"2019");
-        let passYear = "MARCH-2019";  // Example input
+        let passYear = profileData.parsedMemoData.examYear;  // Example input
 
             // Extract only the year
             let yearOnly = passYear.split("-")[1];  // Splits at '-' and takes the second part
@@ -218,7 +200,6 @@ console.log(`User's Address: ${fullAddress}`);
     
     if (filePath) {
         await targetPage.setInputFiles('input#studentphoto', filePath);
-        console.log('✅ File uploaded successfully!');
     } else {
         console.log('⚠️ No photo found for this user.');
     }
@@ -1747,7 +1728,6 @@ console.log(`User's Address: ${fullAddress}`);
         //await page.waitForSelector('select[name="religion"]'); // Wait for the religion dropdown
         //await page.select('select[name="religion"]', instituteValue);
         await targetPage.selectOption('#instcollname', instituteValue);
-        console.log(`Selected Religion: ${profileData.parsedbonofideData.collegeName}`);
       } else {
         console.error("institute not found in the dropdown!");
       }
@@ -1924,7 +1904,6 @@ if (collegeMap && normalizedCourse) {
         // Select the appropriate option from the dropdown
         await targetPage.selectOption('#instcourseid', collegeValue);
 
-        console.log(`✅ Successfully selected: ${normalizedCourse}`);
     } else {
         console.error(`❌ Course not found in the dropdown: ${normalizedCourse}`);
     }
@@ -1986,14 +1965,10 @@ if (collegeMap && normalizedCourse) {
     
     // Normalize and check if location exists
     const formattedLocationName = nearestCounter.name.trim();
-    console.log(`Nearest Counter Name: ${formattedLocationName}`);
-    console.log(`Available Locations: ${Object.keys(locationMap)}`);
-    
     const locationValue = locationMap[formattedLocationName];
     
     if (locationValue) {
         await targetPage.selectOption('#cen', locationValue);
-        console.log(`Selected location: ${formattedLocationName}`);
     } else {
         console.error(`Location '${formattedLocationName}' not found in the dropdown!`);
     }
@@ -2016,13 +1991,11 @@ if (collegeMap && normalizedCourse) {
         const imagePath = 'captcha.jpg';
         fs.writeFileSync(imagePath, base64Data, 'base64');
     
-        console.log("CAPTCHA image saved as captcha.jpg");
     
         // STEP 2: Process Image with OCR
         const { data: { text } } = await tesseract.recognize(imagePath);
     
         const captchaText = text.trim().replace(/[^a-zA-Z0-9]/g, ''); // Clean extracted text
-        console.log("Extracted CAPTCHA:", captchaText);
     
         if (!captchaText || captchaText.length < 4) {
             console.error("CAPTCHA recognition failed, try again.");
@@ -2032,7 +2005,6 @@ if (collegeMap && normalizedCourse) {
     
         // STEP 3: Fill in the CAPTCHA
         await targetPage.fill('[name="userProperties(inputcaptcha)"]', captchaText);
-        console.log("Filled CAPTCHA successfully");
 
                 // Enable the disabled submit button
         await targetPage.evaluate(() => {
@@ -2041,7 +2013,7 @@ if (collegeMap && normalizedCourse) {
         });
 
         // Click the submit button
-       await targetPage.click('#submitBtnId');
+      // await targetPage.click('#submitBtnId');
 
         console.log("Form Submitted Successfully");
     
@@ -2050,9 +2022,9 @@ if (collegeMap && normalizedCourse) {
 
 
 
-        await targetPage.waitForTimeout(3000);
+        await targetPage.waitForTimeout(30000);
         console.log('Form filled successfully! ');
-///////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
         const geoLocation = await targetPage.evaluate(() => {
             return new Promise((resolve, reject) => {
                 navigator.geolocation.getCurrentPosition(
@@ -2151,48 +2123,25 @@ if (collegeMap && normalizedCourse) {
 
        await browser.close();
 
-// ✅ Update application history on success
-const updatedRecord = await ApplicationHistory.findOneAndUpdate(
-    { userEmail: email, applicationName: "Bus Pass" },
-    {
-        $set: {
-            status: "Approved",
-            remarks: "Successfully submitted"
-        }
-    },
-    { new: true, upsert: true }
-);
-
-console.log("Updated Record:", updatedRecord); // ✅ Debugging Step
-
- // **Now send the response after everything is done**
+     
         return res.json({
             success: true,
-            message: 'Bus pass application completed successfully and you will receive your applicaion id through whatsapp and thank you for using o.is service',
+            message: 'Bus pass application completed successfully...',
             nearestCounter,
             address: fullAddress,
-            applicationStatus: updatedRecord.status, // ✅ Send status
-            applicationRemarks: updatedRecord.remarks // ✅ Send remarks
-                });
+        });
+
     } catch (error) {
         console.error('Error processing bus pass automation:', error);
         
         
-        const updatedRecord = await ApplicationHistory.findOneAndUpdate(
-            { userEmail: email, applicationName: "Bus Pass" },
-            {
-                $set: {
-                    status: "Rejected",
-                    remarks: "Automation failed"
-                }
-            },
-            { new: true, upsert: true }
-        );
 
-        console.log("Updated Record (on error):", updatedRecord);
 
-        return res.status(500).json({ error: "Automation failed" });
-    }
+
+return res.status(500).json({ 
+            error: "Automation failed",
+            details: error.message 
+        });    }
 });
 
 module.exports = router;

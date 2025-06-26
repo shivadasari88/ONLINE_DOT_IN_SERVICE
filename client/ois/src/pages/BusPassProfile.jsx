@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-
-import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserContext } from '../contexts/userContext';
-import { toast } from 'react-hot-toast'
+import { toast } from 'react-hot-toast';
+import { FaUniversity, FaSchool, FaUserEdit, FaSave, FaCheckCircle, FaMapMarkerAlt } from 'react-icons/fa';
 
 const BusPassProfile = () => {
     const [profileData, setProfileData] = useState({
@@ -12,23 +10,17 @@ const BusPassProfile = () => {
         parsedbonofideData: {}
     });
     const [isEditing, setIsEditing] = useState(false);
-    const [status, setStatus] = useState("");  // ✅ Moved inside the component
-    const [remarks, setRemarks] = useState("");  // ✅ Moved inside the component
+    const [status, setStatus] = useState("");
+    const [remarks, setRemarks] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    
+    const navigate = useNavigate();
 
-
-        const { user, setUser } = useContext(UserContext);
-        const navigate = useNavigate();
-
-    // ✅ Get Email from LocalStorage
-    const email = localStorage.getItem('email');
-
-    // ✅ Fetch Profile Data Based on User Email
     useEffect(() => {
-        if (!email) return;
     
         const fetchProfile = async () => {
             try {
-                const response = await axios.get(`/api/profile/${email}`);
+                const response = await axios.get(`/api/profile`);
                 setProfileData(response.data || { parsedMemoData: {}, parsedbonofideData: {} });
             } catch (error) {
                 console.error('Error fetching profile:', error);
@@ -36,10 +28,8 @@ const BusPassProfile = () => {
         };
     
         fetchProfile();
-    }, [email, isEditing]); // ✅ Depend on `email` and `isEditing`
-    
+    }, [isEditing]);
 
-    // ✅ Handle Input Changes
     const handleChange = (e, section) => {
         const { name, value } = e.target;
         setProfileData((prevData) => ({
@@ -51,138 +41,202 @@ const BusPassProfile = () => {
         }));
     };
 
-    // ✅ Save Data
     const handleSave = async () => {
         try {
-            const response = await axios.put(`/api/profile/${email}`, {
+            const response = await axios.put(`/api/profile`, {
                 parsedMemoData: profileData.parsedMemoData || {},
                 parsedbonofideData: profileData.parsedbonofideData || {}
             });
     
-            alert('Data updated successfully!');
+            toast.success('Data updated successfully!');
             setIsEditing(false);
-    
-            // ✅ Update UI with the latest profile data
             setProfileData(response.data.profile || { parsedMemoData: {}, parsedbonofideData: {} });
         } catch (error) {
             console.error('Error updating profile:', error);
+            toast.error('Failed to update profile');
         }
     };
 
     const handleAutomateBussPassRegistration = async () => {
+                    setIsLoading(true); // Start loading
+
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
                     const latitude = position.coords.latitude;
                     const longitude = position.coords.longitude;
     
-                    console.log(`User location: ${latitude}, ${longitude}`);
-    
                     try {
                         const response = await axios.post('/applyBusPass', {
-                            username: user.name,
-                            email: user.email,
                             latitude,
                             longitude
                         });
                         
-                        console.log("Response Data:", response.data); // ✅ Debugging Step
-
-                        // ✅ Update frontend with the latest application status & remarks
-                        setStatus(response.data.applicationStatus || "N/A");
-                        setRemarks(response.data.applicationRemarks || "N/A");
-
-
+                        setStatus("Application submitted successfully" || "N/A");
+                        setRemarks("An application reg no has been sent your registered mobile no and download your application from tsrtc.com "|| "N/A");
                         toast.success('Application submitted successfully for Bus Pass');
                     } catch (error) {
-                        console.error('Error applying:', error);
                         toast.error('Failed to submit application');
-                        setStatus("Failed");
-                        setRemarks("Error occurred while applying.");
-                    }
+                        setStatus("incorrect or missing data, Error occurred while applying.");
+                        setRemarks("Make sure the provided information is currect and Apply again");
+                    }finally {
+                    setIsLoading(false); // Stop loading in both success and error cases
+                }
                 },
                 (err) => {
                     console.error('Geolocation error:', err.message);
-                    toast.error('Failed to get location. Please enable location services.');
+                    toast.error('Please enable location services to verify your application');
+                    setIsLoading(false); // Stop loading on geolocation error
+
                 }
             );
         } else {
             toast.error('Geolocation is not supported by your browser');
+            setIsLoading(false); // Stop loading if geolocation not supported
         }
     };
-    
 
     return (
-        <div className="container">
-
-            <div>
-            <button onClick={handleAutomateBussPassRegistration}>Verified</button>
-            <h3>make sure everything below is filled correctly</h3>
-            </div>
-
-            {/* ✅ Memo Data */}
-            {profileData.parsedMemoData && (
-                <div className="memo-data">
-                    <h3>Memo Data</h3>
-                    <div>
-                        <label>Name</label>
-                        <input
-                            type="text"
-                            name="candidateName"
-                            value={profileData.parsedMemoData?.candidateName || ""}
-                            onChange={(e) => handleChange(e, 'parsedMemoData')}
-                            disabled={!isEditing}
-                        />
+        <section className="py-12 px-4 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+            <div className="max-w-4xl mx-auto">
+                <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                    {/* Header */}
+                    <div className="bg-gray-900 text-white px-6 py-4">
+                        <h1 className="text-2xl font-bold">College Bus Pass Application</h1>
+                        <p className="text-gray-300">Verify the details, This data will be considered for automation </p>
                     </div>
 
-                    <div>
-                        <label>10th Hall Ticket Number:</label>
-                        <input
-                            type="text"
-                            name="rollNumber"
-                            value={profileData.parsedMemoData?.rollNumber || ""}
-                            onChange={(e) => handleChange(e, 'parsedMemoData')}
-                            disabled={!isEditing}
-                        />
-                    </div>
+                    <div className="p-6 space-y-8">
+                        {/* Verification Section */}
+                        <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r">
+                            <div className="flex items-start">
+                                <FaCheckCircle className="flex-shrink-0 h-5 w-5 text-blue-600 mt-0.5 mr-3" />
+                                <div>
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <h3 className="text-sm font-medium text-blue-800">Verification Required</h3>
+                                            <p className="mt-1 text-sm text-blue-700">
+                                                Ensure all information below is accurate before clicking on verify & Apply
+                                                button as if not correct edit information
+                                            </p>
+                                        </div>
+                                                <button
+                                                       onClick={handleAutomateBussPassRegistration}
+                                                       disabled={isLoading}
+                                                       className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-600 text-white hover:bg-blue-700 h-9 rounded-md px-4"
+                                                   >
+                                                       {isLoading ? (
+                                                           <>
+                                                               <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                               </svg>
+                                                               Applying...
+                                                           </>
+                                                       ) : (
+                                                           <>
+                                                               <FaMapMarkerAlt className="mr-1" />
+                                                               Verify & Apply
+                                                           </>
+                                                       )}
+                                                   </button>
+                                    </div>
+                                    {status && (
+                                        <div className="mt-2 text-sm">
+                                            <p><span className="font-medium">Status:</span> {status}</p>
+                                            {remarks && <p><span className="font-medium">Remarks:</span> {remarks}</p>}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
 
-                    <div>
-                        <label>Exam Type:</label>
-                        <input
-                            type="text"
-                            name="examType"
-                            value={profileData.parsedMemoData?.examType || ""}
-                            onChange={(e) => handleChange(e, 'parsedMemoData')}
-                            disabled={!isEditing}
-                        />
-                    </div>
+                        {/* Memo Data Section */}
+                        <div className="space-y-6">
+                            <h2 className="text-xl font-semibold text-gray-800 border-b pb-2 flex items-center">
+                                <FaSchool className="mr-2 text-gray-700" />
+                                10th Memo Information
+                            </h2>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Full Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="candidateName"
+                                        value={profileData.parsedMemoData?.candidateName || ""}
+                                        onChange={(e) => handleChange(e, 'parsedMemoData')}
+                                        disabled={!isEditing}
+                                        className={`block w-full rounded-md border ${isEditing ? 'border-gray-300 focus:border-gray-500 focus:ring-gray-500' : 'border-transparent bg-gray-50'} py-2 px-3 shadow-sm`}
+                                    />
+                                </div>
 
-                    <div>
-                        <label>Date of Birth:</label>
-                        <input
-                            type="text"
-                            name="dateOfBirth"
-                            value={profileData.parsedMemoData?.dateOfBirth || ""}
-                            onChange={(e) => handleChange(e, 'parsedMemoData')}
-                            disabled={!isEditing}
-                        />
-                    </div>
-                </div>
-            )}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        10th Hall Ticket Number
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="rollNumber"
+                                        value={profileData.parsedMemoData?.rollNumber || ""}
+                                        onChange={(e) => handleChange(e, 'parsedMemoData')}
+                                        disabled={!isEditing}
+                                        className={`block w-full rounded-md border ${isEditing ? 'border-gray-300 focus:border-gray-500 focus:ring-gray-500' : 'border-transparent bg-gray-50'} py-2 px-3 shadow-sm`}
+                                    />
+                                </div>
 
-            {/* ✅ Bonafide Data */}
-            {profileData.parsedbonofideData && (
-                <div className="bonafide-data">
-                    <h3>Bonafide Data</h3>
-                    <div>
-                        <label>College Name:</label>
-                        <select
-                name="collegeName"
-                value={profileData.parsedbonofideData?.collegeName || ""}
-                onChange={(e) => handleChange(e, 'parsedbonofideData')}
-                disabled={!isEditing}
-            >
-                <option value="">Select a College</option>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Exam Type
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="examType"
+                                        value={profileData.parsedMemoData?.examType || ""}
+                                        onChange={(e) => handleChange(e, 'parsedMemoData')}
+                                        disabled={!isEditing}
+                                        className={`block w-full rounded-md border ${isEditing ? 'border-gray-300 focus:border-gray-500 focus:ring-gray-500' : 'border-transparent bg-gray-50'} py-2 px-3 shadow-sm`}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Date of Birth
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="dateOfBirth"
+                                        value={profileData.parsedMemoData?.dateOfBirth || ""}
+                                        onChange={(e) => handleChange(e, 'parsedMemoData')}
+                                        disabled={!isEditing}
+                                        className={`block w-full rounded-md border ${isEditing ? 'border-gray-300 focus:border-gray-500 focus:ring-gray-500' : 'border-transparent bg-gray-50'} py-2 px-3 shadow-sm`}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Bonafide Data Section */}
+                        <div className="space-y-6 pt-8">
+                            <h2 className="text-xl font-semibold text-gray-800 border-b pb-2 flex items-center">
+                                <FaUniversity className="mr-2 text-gray-700" />
+                                College Information
+                            </h2>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        College Name
+                                    </label>
+                                    <select
+                                        name="collegeName"
+                                        value={profileData.parsedbonofideData?.collegeName || ""}
+                                        onChange={(e) => handleChange(e, 'parsedbonofideData')}
+                                        disabled={!isEditing}
+                                        className={`block w-full rounded-md border ${isEditing ? 'border-gray-300 focus:border-gray-500 focus:ring-gray-500' : 'border-transparent bg-gray-50'} py-2 px-3 shadow-sm`}
+                                    >
+                                        <option value="">Select a College</option>
 <option value="AADHYA DEGREE COLLEGE, ANUPURAM,KAPRA---D5915">AADHYA DEGREE COLLEGE, ANUPURAM,KAPRA---D5915</option>
 <option value="AAR MAHAVEER ENGG COLL, BANDLAGUDA KESHAVAGIRI---T3150">AAR MAHAVEER ENGG COLL, BANDLAGUDA KESHAVAGIRI---T3150</option>
 <option value="ABHYAAS JUNIOR COLLEGE PEERZADIGUDA---J5874">ABHYAAS JUNIOR COLLEGE PEERZADIGUDA---J5874</option>
@@ -1656,36 +1710,68 @@ const BusPassProfile = () => {
             </select>
                     </div>
 
-                    <div>
-                        <label>course and year:</label>
-                        <input
-                            type="text"
-                            name="course"
-                            value={profileData.parsedbonofideData?.course || ""}
-                            onChange={(e) => handleChange(e, 'parsedbonofideData')}
-                            disabled={!isEditing}
-                        />
-                    </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Course and Year
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="course"
+                                        value={profileData.parsedbonofideData?.course || ""}
+                                        onChange={(e) => handleChange(e, 'parsedbonofideData')}
+                                        disabled={!isEditing}
+                                        className={`block w-full rounded-md border ${isEditing ? 'border-gray-300 focus:border-gray-500 focus:ring-gray-500' : 'border-transparent bg-gray-50'} py-2 px-3 shadow-sm`}
+                                    />
+                                </div>
 
-                    <div>
-                        <label>admission or college hallticket no:</label>
-                        <input
-                            type="text"
-                            name="hallticketNo"
-                            value={profileData.parsedbonofideData?.hallticketNo || ""}
-                            onChange={(e) => handleChange(e, 'parsedbonofideData')}
-                            disabled={!isEditing}
-                        />
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Admission/College Hallticket No
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="hallticketNo"
+                                        value={profileData.parsedbonofideData?.hallticketNo || ""}
+                                        onChange={(e) => handleChange(e, 'parsedbonofideData')}
+                                        disabled={!isEditing}
+                                        className={`block w-full rounded-md border ${isEditing ? 'border-gray-300 focus:border-gray-500 focus:ring-gray-500' : 'border-transparent bg-gray-50'} py-2 px-3 shadow-sm`}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex justify-end space-x-4 pt-6">
+                            {isEditing ? (
+                                <>
+                                    <button
+                                        onClick={() => setIsEditing(false)}
+                                        className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-gray-300 bg-white hover:bg-gray-50 h-10 rounded-md px-6"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={handleSave}
+                                        className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-gray-900 text-gray-50 hover:bg-gray-800 h-10 rounded-md px-6"
+                                    >
+                                        <FaSave className="mr-1" />
+                                        Save Changes
+                                    </button>
+                                </>
+                            ) : (
+                                <button
+                                    onClick={() => setIsEditing(true)}
+                                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-gray-900 text-gray-50 hover:bg-gray-800 h-10 rounded-md px-6"
+                                >
+                                    <FaUserEdit className="mr-1" />
+                                    Edit Information
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
-            )}
-
-            {isEditing ? (
-                <button onClick={handleSave}>Save</button>
-            ) : (
-                <button onClick={() => setIsEditing(true)}>Edit Data</button>
-            )}
-        </div>
+            </div>
+        </section>
     );
 };
 

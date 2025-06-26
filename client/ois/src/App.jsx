@@ -1,50 +1,51 @@
 import './App.css'
 import './index.css'
-import { Routes, Route } from 'react-router-dom';
-import Navbar from '../src/components/Navbar';
-import Register from '../src/pages/Register';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Login from '../src/pages/Login';
 import axios from 'axios';
 import { Toaster } from 'react-hot-toast';
 import { UserContextProvider } from './contexts/userContext';
 import Dashboard from './pages/Dashboard';
+import Home from './pages/Home';
 import UpdateProfile from './pages/Updateprofile';
 import ProfilePage from './pages/ProfilePage';
 import BusPassProfile from './pages/BusPassProfile';
 import SchoolBusPassProfile from './pages/SchoolBusPassProfile';
 import Services from './pages/Services';
-import Home from "./components/Home";
-import Footer from '../src/components/Footer';
-import HistoryPage from "./pages/HistoryPage"; // ✅ Import
 import FormFiller from "./pages/FormFiller"; 
-import NoteFile from "./legal/NoteFile"; // ✅ Import
+import NoteFile from "./legal/NoteFile";
+import EmailVerify from './pages/EmailVerify';
+import ResetPassword from './pages/ResetPassword';
+import NavbarPublic from './components/NavbarPublic';
 
-
-
-axios.defaults.baseURL ="http://localhost:3000";
+axios.defaults.baseURL = "http://localhost:3000";
 axios.defaults.withCredentials = true;
 
 function App() {
+  const location = useLocation();
+
+          const hideNavbarPaths = ['/login', '/email-verify', '/reset-password'];
+
+
   return (
     <>
       <UserContextProvider>
-        <Navbar /> {/* ✅ Navbar is here */}
         <Toaster position='bottom-right' toastOptions={{ duration: 2000 }} />
+        {!hideNavbarPaths.includes(location.pathname) && <NavbarPublic />}
         <Routes>
-          <Route path='/' element={<Dashboard />} />
-          <Route path='/register' element={<Register />} />
+          <Route path='/' element={<Home />} />
           <Route path='/login' element={<Login />} />
-        {/*  <Route path='/dashboard' element={<Home />} />   */}
+          <Route path='/email-verify' element={<EmailVerify />} />
+          <Route path='/reset-password' element={<ResetPassword />} />
+          <Route path='/dashboard' element={<Dashboard />} />  
           <Route path='/updateprofile' element={<UpdateProfile />} /> 
           <Route path='/profilepage' element={<ProfilePage />} />
-          <Route path="/history" element={<HistoryPage />} />
           <Route path='/services' element={<Services />} />
           <Route path='/buspassprofile' element={<BusPassProfile />} />
           <Route path='/schoolbuspassprofile' element={<SchoolBusPassProfile />} />
           <Route path="/formfiller" element={<FormFiller />} />
           <Route path="/notefile" element={<NoteFile />} />
         </Routes>
-        <Footer /> 
       </UserContextProvider>
     </>
   );

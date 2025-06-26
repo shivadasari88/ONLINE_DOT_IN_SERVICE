@@ -1,10 +1,12 @@
 const express = require('express')
 const router = express.Router();
 const cors = require('cors')
-const {test,registerUser,loginUser,getProfile, createProfile} = require('../controllers/authController')
+const {test,registerUser,loginUser, createProfile,logout,sendVerifyOtp,verifyEmail, isAuthenticated,sendRestOtp,resetPassword} = require('../controllers/authController')
 
 const multer = require('multer')
 const path = require('path');
+const userAuth = require('../helpers/userAuth');
+const getUserData = require('../controllers/userController');
 
 //middleware
 
@@ -31,11 +33,18 @@ const upload = multer({ storage: storage });
 router.get('/',test)
 router.post('/register',registerUser)
 router.post('/login',loginUser)
-router.get('/profile',getProfile)
+router.post('/logout',logout)
+router.post('/send-verify-otp',userAuth, sendVerifyOtp)
+router.post('/verify-account',userAuth, verifyEmail)
+router.get('/is-auth',userAuth, isAuthenticated)
+router.post('/send-reset-otp', sendRestOtp)
+router.post('/reset-password', resetPassword)
+
+router.get('/profile',userAuth,getUserData)
 router.post('/update', upload.fields([
     { name: 'memo', maxCount: 1 },
     { name: 'bonofide', maxCount: 1 },
     { name: 'passPhoto', maxCount: 1 }
-]), createProfile);
+]), userAuth,createProfile);
 
 module.exports =router;

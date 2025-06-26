@@ -27,8 +27,6 @@ const extractDetailsFromBonofide = async (imagePath) => {
             .map(block => block.Text.trim())
             .filter(line => line.length > 0);
 
-        console.log("Cleaned Lines:", lines);
-
         // Parse Key Fields
         const parsedData = {
             collegeName: extractSameLine(lines, /COLLEGE/i),

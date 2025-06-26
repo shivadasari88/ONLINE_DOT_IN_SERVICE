@@ -1,9 +1,8 @@
 const express = require('express');
 const dotenv = require('dotenv').config();
 const mongoose = require('mongoose');
-const Profile = require('../models/profile');
-const ApplicationHistory = require("../models/ApplicationHistory");
-const { Router } = express;
+const User = require('../models/user');
+const userAuth = require('../helpers/userAuth');const { Router } = express;
 const cors = require('cors');
 const axios = require('axios');
 const path = require('path');
@@ -24,18 +23,7 @@ router.use(express.json());
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
-// Function to save application history
-const saveApplicationHistory = async (email, applicationName) => {
-    try {
-        await ApplicationHistory.create({
-            userEmail: email,
-            applicationName,
-            status: "Pending" // Initially pending
-        });
-    } catch (error) {
-        console.error("Error saving application history:", error);
-    }
-};
+
 
 
 async function getAddress(latitude, longitude) {
@@ -84,12 +72,12 @@ async function getAddress(latitude, longitude) {
     }
 }
 
-router.post('/applySchoolBusPass', async (req, res) => {
-    const { username, email, latitude, longitude } = req.body;
+router.post('/applySchoolBusPass', userAuth, async (req, res) => {
+    const { userId, latitude, longitude } = req.body;
 
-    const profileData = await Profile.findOne({ username });
+    const profileData = await User.findOne({ _id: userId });
     
-    if (!username || !email ||  !latitude || !longitude) {
+    if (!userId || !latitude || !longitude) {
         return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -97,9 +85,6 @@ router.post('/applySchoolBusPass', async (req, res) => {
 
     try {
 
-
-        // Save application history
-        await saveApplicationHistory(email, "Bus Pass");
 
         const addressData = await getAddress(latitude, longitude);
         if (!addressData) {
@@ -122,7 +107,7 @@ console.log(`User's Address: ${fullAddress}`);
             return res.status(500).json({ error: 'Failed to find nearest counter' });
         }
 
-        const browser = await firefox.launch({ headless: true});
+        const browser = await firefox.launch({ headless: false});
         const context = await browser.newContext({
             permissions: ['geolocation'],
             geolocation: { latitude, longitude },
@@ -2318,7 +2303,7 @@ if (collegeMap && normalizedCourse) {
 
 
 
-        await targetPage.waitForTimeout(3000);
+        await targetPage.waitForTimeout(30000);
         console.log('Form filled successfully! ');
 ///////////////////////////////////////////////////////////////////////////////////////////////
         const geoLocation = await targetPage.evaluate(() => {
@@ -2418,19 +2403,6 @@ if (collegeMap && normalizedCourse) {
 
        //await browser.close();
 
-// ✅ Update application history on success
-const updatedRecord = await ApplicationHistory.findOneAndUpdate(
-    { userEmail: email, applicationName: "Bus Pass" },
-    {
-        $set: {
-            status: "Approved",
-            remarks: "Successfully submitted"
-        }
-    },
-    { new: true, upsert: true }
-);
-
-console.log("Updated Record:", updatedRecord); // ✅ Debugging Step
 
  // **Now send the response after everything is done**
         return res.json({
@@ -2438,25 +2410,10 @@ console.log("Updated Record:", updatedRecord); // ✅ Debugging Step
             message: 'Bus pass application completed successfully and you will receive your applicaion id through whatsapp and thank you for using o.is service',
             nearestCounter,
             address: fullAddress,
-            applicationStatus: updatedRecord.status, // ✅ Send status
-            applicationRemarks: updatedRecord.remarks // ✅ Send remarks
                 });
     } catch (error) {
         console.error('Error processing bus pass automation:', error);
         
-        
-        const updatedRecord = await ApplicationHistory.findOneAndUpdate(
-            { userEmail: email, applicationName: "Bus Pass" },
-            {
-                $set: {
-                    status: "Rejected",
-                    remarks: "Automation failed"
-                }
-            },
-            { new: true, upsert: true }
-        );
-
-        console.log("Updated Record (on error):", updatedRecord);
 
         return res.status(500).json({ error: "Automation failed" });
     }
