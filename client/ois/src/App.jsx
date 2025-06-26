@@ -18,7 +18,7 @@ import EmailVerify from './pages/EmailVerify';
 import ResetPassword from './pages/ResetPassword';
 import NavbarPublic from './components/NavbarPublic';
 
-axios.defaults.baseURL = "http://localhost:3000";
+axios.defaults.baseURL = "https://onlinedotinservice.com/api";
 axios.defaults.withCredentials = true;
 
 function App() {
