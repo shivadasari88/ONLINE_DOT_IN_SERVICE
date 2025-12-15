@@ -12,7 +12,7 @@ const getUserData = require('../controllers/userController');
 
 router.use(cors({
     credentials: true,
-    origin: ['https://onlinedotinservice.com', 'http://localhost:5173']
+    origin: ['http://localhost:5173', 'http://15.206.117.255:5173']
 }));
 
 

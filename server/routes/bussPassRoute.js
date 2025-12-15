@@ -18,7 +18,7 @@ const router = Router();
 
 router.use(cors({
     credentials: true,
-    origin: ['http://localhost:5173', 'https://onlinedotinservice.com']
+    origin: ['http://localhost:5173', 'http://15.206.117.255:5173']
 }));
 
 router.use(express.json());
